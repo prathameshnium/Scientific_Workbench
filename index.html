@@ -234,6 +234,22 @@
                     <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">
                         <i class="fas fa-microchip mr-2"></i>Intelligence
                     </h3>
+
+                    <!-- Unit Converter -->
+                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all duration-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-accent-blue">Unit Converter</span>
+                            <i class="fas fa-exchange-alt text-gray-500"></i>
+                        </div>
+                        <div class="space-y-2">
+                            <input type="number" id="conv-input" placeholder="Value" class="w-full bg-dark-bg border border-border-color rounded px-2 py-1 text-sm text-white focus:border-accent-blue focus:outline-none font-mono" oninput="convertUnits()">
+                            <div class="flex gap-1">
+                                <select id="conv-from" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
+                                <select id="conv-to" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
+                            </div>
+                            <div id="conv-result" class="text-center font-mono text-sm text-accent-orange min-h-[1.5rem] flex items-center justify-center">---</div>
+                        </div>
+                    </div>
                     
                     <a href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
                         <div class="flex items-center justify-between">
@@ -346,6 +362,51 @@
 
     <!-- JavaScript -->
     <script>
+        // Unit Converter Logic
+        const prefixes = [
+            { name: 'Tera (T)', val: 1e12 },
+            { name: 'Giga (G)', val: 1e9 },
+            { name: 'Mega (M)', val: 1e6 },
+            { name: 'Kilo (k)', val: 1e3 },
+            { name: 'Base', val: 1 },
+            { name: 'Milli (m)', val: 1e-3 },
+            { name: 'Micro (µ)', val: 1e-6 },
+            { name: 'Nano (n)', val: 1e-9 },
+            { name: 'Pico (p)', val: 1e-12 },
+            { name: 'Femto (f)', val: 1e-15 }
+        ];
+
+        function initConverter() {
+            const fromSel = document.getElementById('conv-from');
+            const toSel = document.getElementById('conv-to');
+            
+            prefixes.forEach(p => {
+                const opt1 = new Option(p.name, p.val);
+                const opt2 = new Option(p.name, p.val);
+                fromSel.add(opt1);
+                toSel.add(opt2);
+            });
+
+            // Default: Giga to Mega
+            fromSel.value = 1e9; 
+            toSel.value = 1e6;
+        }
+
+        function convertUnits() {
+            const input = parseFloat(document.getElementById('conv-input').value);
+            if (isNaN(input)) {
+                document.getElementById('conv-result').textContent = "---";
+                return;
+            }
+            
+            const fromVal = parseFloat(document.getElementById('conv-from').value);
+            const toVal = parseFloat(document.getElementById('conv-to').value);
+            
+            const result = input * (fromVal / toVal);
+            // Format: 1.23e+6
+            document.getElementById('conv-result').textContent = result.toExponential(2);
+        }
+
         // Clock Functionality
         function updateTime() {
             const now = new Date();
@@ -360,8 +421,13 @@
             if (dateEl) dateEl.textContent = dateString;
             if (footerYearEl) footerYearEl.textContent = now.getFullYear();
         }
-        setInterval(updateTime, 1000);
-        updateTime();
+        
+        // Initialize all functions
+        document.addEventListener('DOMContentLoaded', () => {
+            initConverter();
+            setInterval(updateTime, 1000);
+            updateTime();
+        });
 
         // Search Engine Switcher
         function setEngine(engine) {
