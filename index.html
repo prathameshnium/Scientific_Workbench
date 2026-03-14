@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scientific Workbench | Research Hub</title>
     
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; connect-src 'self' https:;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,7 +18,7 @@
                         'dark-bg': '#0f111a', 'card-bg': 'rgba(26, 29, 45, 0.85)',
                         'accent-orange': '#F6AD55', 'accent-blue': '#63B3ED', 'accent-green': '#68D391',
                         'text-main': '#E2E8F0', 'text-muted': '#94A3B8', 'border-color': 'rgba(255, 255, 255, 0.1)',
-                        'usage-track': '#1f101a', 'usage-fill': '#831843' /* Deep magenta to match image */
+                        'usage-track': '#1f101a', 'usage-fill': '#831843'
                     }
                 }
             }
@@ -30,15 +33,8 @@
         }
         .glass-panel { background: rgba(15, 17, 26, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
         .custom-card { backdrop-filter: blur(8px); transition: all 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .custom-card:hover { border-color: rgba(255, 255, 255, 0.2); }
+        .custom-card:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
         
-        /* Progress Ring Logic */
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.35s linear;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
     </style>
@@ -73,20 +69,26 @@
 
     <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto">
         
-        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
-            <div class="md:col-span-3">
-                <form action="https://www.google.com/search" method="GET" id="searchForm" class="relative group" target="_blank">
-                    <input type="text" name="q" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-10 pr-12 focus:outline-none focus:border-accent-orange shadow-lg" placeholder="Search the cosmos..." autofocus>
-                    <i class="fas fa-search absolute left-3 top-4 text-text-muted group-focus-within:text-accent-orange"></i>
-                    <button type="button" onclick="window.open('https://www.wolframalpha.com/')" class="absolute right-3 top-3 text-text-muted hover:text-accent-orange" title="WolframAlpha">
-                        <i class="fas fa-equals"></i>
+        <div class="max-w-4xl mx-auto mb-10">
+            <form action="https://duckduckgo.com/" method="GET" id="searchForm" class="relative group" target="_blank" rel="noopener noreferrer">
+                <input type="text" id="searchInput" name="q" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-40 focus:outline-none focus:border-accent-green shadow-lg transition-colors" placeholder="Search with DuckDuckGo..." autofocus autocomplete="off">
+                <i class="fas fa-search absolute left-4 top-4 text-text-muted group-focus-within:text-accent-green" id="searchIcon"></i>
+                
+                <div class="absolute inset-y-0 right-2 flex items-center gap-1">
+                    <button type="button" onclick="setEngine('duckduckgo')" class="p-2 text-gray-400 hover:text-accent-green transition-colors" title="DuckDuckGo">
+                        <img src="https://duckduckgo.com/favicon.ico" class="w-4 h-4 opacity-70 hover:opacity-100">
                     </button>
-                </form>
-            </div>
-            <div class="relative">
-                <input type="text" id="doiInput" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-accent-blue shadow-lg" placeholder="Resolve DOI (10.1038...)">
-                <i class="fas fa-fingerprint absolute left-3 top-4 text-accent-blue"></i>
-            </div>
+                    <button type="button" onclick="setEngine('google')" class="p-2 text-gray-400 hover:text-white transition-colors" title="Google">
+                        <i class="fab fa-google"></i>
+                    </button>
+                    <button type="button" onclick="setEngine('startpage')" class="p-2 text-gray-400 hover:text-accent-blue transition-colors" title="Startpage">
+                        <span class="font-bold text-[11px] tracking-tighter">SP</span>
+                    </button>
+                    <button type="button" onclick="setEngine('scholar')" class="p-2 text-gray-400 hover:text-accent-orange transition-colors border-l border-white/10 pl-3 ml-1" title="Google Scholar">
+                        <i class="fas fa-graduation-cap"></i>
+                    </button>
+                </div>
+            </form>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -97,108 +99,113 @@
                 <div class="custom-card bg-[#0a0a0a] border border-white/5 p-4 rounded-xl">
                     <div class="flex justify-between items-center mb-6">
                         <span class="font-bold text-white tracking-wide">Usage Limits</span>
-                        <i class="far fa-info-circle text-text-muted cursor-pointer hover:text-white transition-colors" onclick="resetUsageTimer()" title="Click to manually reset 4h cycle"></i>
+                        <i class="far fa-info-circle text-text-muted cursor-pointer hover:text-white transition-colors" onclick="resetUsageTimer()" title="Reset 4h cycle"></i>
                     </div>
-                    
                     <div class="flex justify-between items-end mb-2">
                         <span class="text-white text-sm">Base</span>
                         <div class="text-text-muted text-sm flex items-center gap-1.5 font-medium">
-                            <i class="far fa-clock"></i>
-                            <span id="usage-time-left">-- minutes</span>
+                            <i class="far fa-clock"></i><span id="usage-time-left">-- minutes</span>
                         </div>
                     </div>
-                    
                     <div class="w-full bg-usage-track rounded-full h-2.5 overflow-hidden border border-white/5">
                         <div id="usage-progress-bar" class="bg-usage-fill h-full transition-all duration-1000 rounded-full" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <div class="custom-card bg-card-bg p-3 rounded-lg border-t-4 border-t-accent-blue mt-4">
-                    <span class="text-accent-blue text-xs font-bold mb-2 block">Unit Converter</span>
-                    <select id="conv-category" class="w-full bg-black/40 border border-white/10 rounded px-1 py-1 text-[10px] mb-2 text-white" onchange="updateUnitOptions()">
-                        <option value="length">Length</option><option value="weight">Mass</option><option value="temp">Temperature</option>
-                    </select>
-                    <input type="number" id="conv-input" class="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-xs mb-2 font-mono text-white" placeholder="Value" oninput="convertUnits()">
-                    <div class="flex gap-1 mb-2">
-                        <select id="conv-from" class="w-1/2 bg-black/40 border border-white/10 rounded px-1 py-1 text-[10px] text-white" onchange="convertUnits()"></select>
-                        <select id="conv-to" class="w-1/2 bg-black/40 border border-white/10 rounded px-1 py-1 text-[10px] text-white" onchange="convertUnits()"></select>
-                    </div>
-                    <div id="conv-result" class="text-center font-mono text-xs text-accent-orange bg-black/40 py-1 rounded">---</div>
-                </div>
+                <a href="https://prathameshnium.github.io/Kusanagi-AI/" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg border-l-4 border-l-accent-orange">
+                    <span class="font-semibold text-sm block">Kusanagi AI</span>
+                    <p class="text-[10px] text-text-muted">Local Neural Interface</p>
+                </a>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Physics & Papers</h3>
-                <a href="https://inspirehep.net/" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg">
-                    <span class="font-semibold text-sm block">INSPIRE-HEP</span>
-                    <p class="text-[10px] text-text-muted">High Energy Physics Database</p>
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Science & News</h3>
+                <a href="https://www.nature.com/news" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
+                    <span class="font-semibold text-sm block">Nature</span>
+                    <p class="text-[10px] text-text-muted">Latest Science News</p>
                 </a>
-                <a href="https://arxiv.org/list/physics/new" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg">
+                <a href="https://www.science.org/news" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
+                    <span class="font-semibold text-sm block">Science Magazine</span>
+                    <p class="text-[10px] text-text-muted">News & Publications</p>
+                </a>
+                <a href="https://arxiv.org/list/physics/new" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
                     <span class="font-semibold text-sm block">arXiv Physics</span>
                     <p class="text-[10px] text-text-muted">New Preprints</p>
                 </a>
-                <a href="https://physics.nist.gov/cuu/Constants/" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg">
-                    <span class="font-semibold text-sm block">NIST Constants</span>
-                    <p class="text-[10px] text-text-muted">Fundamental Physical Data</p>
-                </a>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Writing Tools</h3>
-                <a href="https://www.overleaf.com/project" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg border-l-4 border-l-accent-green">
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Development</h3>
+                <div class="flex gap-2">
+                    <a href="https://github.com/prathameshnium" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">GitHub</a>
+                    <a href="https://gitlab.com/" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">GitLab</a>
+                </div>
+                
+                <a href="https://www.overleaf.com/project" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
                     <span class="font-semibold text-sm block">Overleaf</span>
                     <p class="text-[10px] text-text-muted">Active LaTeX Projects</p>
                 </a>
-                <button onclick="toggleModal()" class="w-full text-left custom-card block bg-card-bg p-3 rounded-lg hover:border-accent-blue">
-                    <span class="font-semibold text-sm block">LaTeX Symbols</span>
-                    <p class="text-[10px] text-accent-blue">Quick Reference Guide</p>
-                </button>
+                
                 <div class="flex gap-2">
-                    <a href="https://www.zotero.org/mylibrary" target="_blank" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">Zotero</a>
-                    <a href="https://www.mendeley.com/library/" target="_blank" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">Mendeley</a>
+                    <a href="https://www.zotero.org/mylibrary" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">Zotero</a>
+                    <button onclick="toggleModal()" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:text-accent-blue transition-colors">LaTeX Ref</button>
                 </div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Focus</h3>
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Workspace</h3>
                 
-                <div class="custom-card bg-card-bg p-4 rounded-xl flex flex-col items-center">
-                    <div class="relative w-32 h-32 mb-4">
-                        <svg class="w-full h-full">
-                            <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,0.05)" stroke-width="6" fill="transparent" />
-                            <circle id="pomo-ring" cx="64" cy="64" r="56" stroke="#68D391" stroke-width="6" fill="transparent" 
-                                    stroke-dasharray="351.85" stroke-dashoffset="0" stroke-linecap="round" class="progress-ring__circle text-accent-green drop-shadow-[0_0_8px_rgba(104,211,145,0.5)]" />
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-2xl font-mono text-white tracking-wider" id="pomodoro-display">25:00</span>
-                        </div>
-                    </div>
-                    
+                <div class="custom-card bg-card-bg p-4 rounded-xl text-center">
+                    <div class="text-3xl font-mono text-white mb-3 tracking-widest" id="pomodoro-display">25:00</div>
                     <div class="flex w-full gap-2">
                         <button onclick="toggleTimer()" id="pomo-btn" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Start</button>
-                        <button onclick="resetPomodoro()" class="bg-white/5 hover:bg-red-500 hover:text-white text-xs font-bold px-3 py-2 rounded transition-colors" title="Reset"><i class="fas fa-redo-alt"></i></button>
+                        <button onclick="resetPomodoro()" class="bg-white/5 hover:bg-red-500 hover:text-white text-xs font-bold px-4 py-2 rounded transition-colors" title="Reset"><i class="fas fa-redo-alt"></i></button>
                     </div>
                 </div>
 
-                <textarea id="local-note" class="w-full h-24 bg-card-bg border border-border-color rounded-lg p-3 text-xs text-text-main focus:outline-none font-mono custom-card resize-none" placeholder="Scratchpad (Auto-saves locally)..."></textarea>
+                <div class="flex gap-2">
+                    <a href="https://keep.google.com/" target="_blank" rel="noopener noreferrer" class="flex-1 custom-card block bg-card-bg p-2 rounded text-center hover:bg-white/10 transition-colors text-xs font-bold">
+                        <i class="far fa-lightbulb text-accent-orange mr-1"></i> Keep
+                    </a>
+                    <a href="https://bsky.app/" target="_blank" rel="noopener noreferrer" class="flex-1 custom-card block bg-card-bg p-2 rounded text-center hover:bg-white/10 transition-colors text-xs font-bold">
+                        <i class="fas fa-cloud text-accent-blue mr-1"></i> Bluesky
+                    </a>
+                </div>
+
+                <textarea id="local-note" class="w-full h-16 bg-card-bg border border-border-color rounded-lg p-2 text-xs text-text-main focus:outline-none font-mono custom-card resize-none" placeholder="Local scratchpad..."></textarea>
             </div>
         </div>
     </main>
 
-    <footer class="glass-panel py-3 mt-auto z-50">
-        <div class="container mx-auto px-6 text-right text-[10px] text-gray-500 font-mono">
-            &copy; <span id="footer-year"></span> Prathamesh Deshmukh
-        </div>
-    </footer>
-
     <script>
+        // --- Search Engine Switcher ---
+        function setEngine(engine) {
+            const form = document.getElementById('searchForm');
+            const input = document.getElementById('searchInput');
+            const icon = document.getElementById('searchIcon');
+            
+            const engines = {
+                duckduckgo: { url: "https://duckduckgo.com/", placeholder: "Search with DuckDuckGo...", color: "text-accent-green" },
+                google: { url: "https://www.google.com/search", placeholder: "Search with Google...", color: "text-white" },
+                startpage: { url: "https://www.startpage.com/sp/search", placeholder: "Search with Startpage...", color: "text-accent-blue" },
+                scholar: { url: "https://scholar.google.com/scholar", placeholder: "Search Google Scholar...", color: "text-accent-orange" }
+            };
+
+            form.action = engines[engine].url;
+            input.placeholder = engines[engine].placeholder;
+            
+            // Update icon color based on selection
+            icon.className = `fas fa-search absolute left-4 top-4 group-focus-within:${engines[engine].color} ${engines[engine].color}`;
+            input.className = `w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-40 focus:outline-none focus:border-${engines[engine].color.split('-')[1]} shadow-lg transition-colors`;
+            input.focus();
+        }
+
         // --- Core Time & Date Logic ---
         function updateTime() {
             const now = new Date();
             document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB');
             document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
             document.getElementById('date-marathi').textContent = now.toLocaleDateString('mr-IN', { weekday: 'long' });
-            document.getElementById('footer-year').textContent = now.getFullYear();
         }
 
         // --- Usage Tracker Logic ---
@@ -207,9 +214,8 @@
             let targetTime = localStorage.getItem('wb_usage_target');
             const now = new Date().getTime();
 
-            // Initialize to user's scenario (54 mins remaining) if not set
             if (!targetTime) {
-                targetTime = now + (54 * 60 * 1000);
+                targetTime = now + (54 * 60 * 1000); // Default to user's 54 min scenario initially
                 localStorage.setItem('wb_usage_target', targetTime);
             }
 
@@ -225,29 +231,23 @@
             const m = Math.floor((diffSeconds % 3600) / 60);
             
             let timeText = h > 0 ? `${h}h ${m}m` : `${m} minutes`;
-            
-            // Calculate percentage for visual bar (smaller width = less time left)
             const percentage = (diffSeconds / totalSeconds) * 100;
 
             document.getElementById('usage-time-left').textContent = timeText;
             document.getElementById('usage-progress-bar').style.width = `${percentage}%`;
         }
 
-        // Hidden function attached to the (i) icon to manually reset the 4-hour clock
         function resetUsageTimer() {
             const targetTime = new Date().getTime() + (4 * 3600 * 1000);
             localStorage.setItem('wb_usage_target', targetTime);
             updateUsageTracker();
         }
 
-        // --- Pomodoro Ring Logic ---
+        // --- Standard Pomodoro Logic ---
         const pomoTotalSeconds = 1500; // 25 minutes
         let pomoSecondsLeft = pomoTotalSeconds;
         let pomoInterval;
         let pomoRunning = false;
-        
-        // 2 * pi * radius (56) = ~351.85
-        const circleCircumference = 351.85; 
 
         function toggleTimer() {
             const btn = document.getElementById('pomo-btn');
@@ -275,11 +275,6 @@
             const m = Math.floor(pomoSecondsLeft / 60);
             const s = pomoSecondsLeft % 60;
             document.getElementById('pomodoro-display').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            
-            // Update Ring SVG
-            const ring = document.getElementById('pomo-ring');
-            const offset = circleCircumference - (pomoSecondsLeft / pomoTotalSeconds) * circleCircumference;
-            ring.style.strokeDashoffset = offset;
         }
 
         function resetPomodoro() { 
@@ -290,55 +285,17 @@
             updatePomoDisplay(); 
         }
 
-        // --- Utility Functions ---
-        document.getElementById('doiInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                const doi = this.value.trim();
-                if (doi) window.open(`https://doi.org/${doi}`, '_blank');
-            }
-        });
-
         function toggleModal() {
             document.getElementById('latexModal').classList.toggle('active');
-        }
-
-        // Unit Converter
-        const units = {
-            temp: { types: ['C', 'F', 'K'], toBase: (v, t) => t==='C'?v : t==='F'?(v-32)*5/9 : v-273.15, fromBase: (v, t) => t==='C'?v : t==='F'?(v*9/5)+32 : v+273.15 },
-            length: { rates: { m:1, km:1000, cm:0.01, mm:0.001, mi:1609.34, ft:0.3048, in:0.0254 } },
-            weight: { rates: { kg:1, g:0.001, mg:0.000001, lb:0.453592, oz:0.0283495 } }
-        };
-
-        function updateUnitOptions() {
-            const cat = document.getElementById('conv-category').value;
-            const fromSel = document.getElementById('conv-from'), toSel = document.getElementById('conv-to');
-            fromSel.innerHTML = ''; toSel.innerHTML = '';
-            const options = units[cat].types || Object.keys(units[cat].rates);
-            options.forEach(opt => {
-                fromSel.add(new Option(opt, opt));
-                toSel.add(new Option(opt, opt));
-            });
-            toSel.selectedIndex = 1;
-            convertUnits();
-        }
-
-        function convertUnits() {
-            const val = parseFloat(document.getElementById('conv-input').value);
-            if (isNaN(val)) { document.getElementById('conv-result').textContent = "---"; return; }
-            const cat = document.getElementById('conv-category').value, from = document.getElementById('conv-from').value, to = document.getElementById('conv-to').value;
-            let res = cat === 'temp' ? units.temp.fromBase(units.temp.toBase(val, from), to) : (val * units[cat].rates[from]) / units[cat].rates[to];
-            document.getElementById('conv-result').textContent = res.toLocaleString(undefined, {maximumFractionDigits: 4});
         }
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(updateTime, 1000); 
-            setInterval(updateUsageTracker, 60000); // Check usage every minute
+            setInterval(updateUsageTracker, 60000);
             updateTime();
             updateUsageTracker();
-            updateUnitOptions();
             
-            // Scratchpad sync
             const savedNote = localStorage.getItem('wb_note');
             if(savedNote) document.getElementById('local-note').value = savedNote;
             document.getElementById('local-note').addEventListener('input', e => localStorage.setItem('wb_note', e.target.value));
