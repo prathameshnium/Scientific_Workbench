@@ -362,49 +362,112 @@
 
     <!-- JavaScript -->
     <script>
-        // Unit Converter Logic
-        const prefixes = [
-            { name: 'Tera (T)', val: 1e12 },
-            { name: 'Giga (G)', val: 1e9 },
-            { name: 'Mega (M)', val: 1e6 },
-            { name: 'Kilo (k)', val: 1e3 },
-            { name: 'Base', val: 1 },
-            { name: 'Milli (m)', val: 1e-3 },
-            { name: 'Micro (µ)', val: 1e-6 },
-            { name: 'Nano (n)', val: 1e-9 },
-            { name: 'Pico (p)', val: 1e-12 },
-            { name: 'Femto (f)', val: 1e-15 }
-        ];
+        // --- Calculator Logic ---
+        function calcAppend(val) {
+            document.getElementById('calc-display').value += val;
+        }
+        function calcClear() {
+            document.getElementById('calc-display').value = '';
+        }
+        function calcSolve() {
+            try {
+                const val = document.getElementById('calc-display').value;
+                // Allow digits, operators, decimal, space
+                if (/^[0-9+\-*/. ]+$/.test(val)) {
+                    document.getElementById('calc-display').value = eval(val);
+                }
+            } catch (e) {
+                document.getElementById('calc-display').value = 'Error';
+            }
+        }
+
+        // --- Enhanced Unit Converter Logic ---
+        const units = {
+            temp: {
+                name: 'Temperature',
+                types: ['C', 'F', 'K'],
+                toBase: (val, type) => {
+                    if (type === 'C') return val;
+                    if (type === 'F') return (val - 32) * 5/9;
+                    if (type === 'K') return val - 273.15;
+                    return val;
+                },
+                fromBase: (val, type) => {
+                    if (type === 'C') return val;
+                    if (type === 'F') return (val * 9/5) + 32;
+                    if (type === 'K') return val + 273.15;
+                    return val;
+                }
+            },
+            length: {
+                name: 'Length',
+                rates: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 }
+            },
+            weight: {
+                name: 'Mass',
+                rates: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495 }
+            },
+            data: {
+                name: 'Digital',
+                rates: { B: 1, KB: 1024, MB: 1024**2, GB: 1024**3, TB: 1024**4 }
+            }
+        };
 
         function initConverter() {
+            updateUnitOptions();
+        }
+
+        function updateUnitOptions() {
+            const cat = document.getElementById('conv-category').value;
             const fromSel = document.getElementById('conv-from');
             const toSel = document.getElementById('conv-to');
             
-            prefixes.forEach(p => {
-                const opt1 = new Option(p.name, p.val);
-                const opt2 = new Option(p.name, p.val);
-                fromSel.add(opt1);
-                toSel.add(opt2);
-            });
+            fromSel.innerHTML = '';
+            toSel.innerHTML = '';
 
-            // Default: Giga to Mega
-            fromSel.value = 1e9; 
-            toSel.value = 1e6;
+            const data = units[cat];
+            let options = [];
+            
+            if (data.types) options = data.types;
+            else if (data.rates) options = Object.keys(data.rates);
+
+            options.forEach(opt => {
+                fromSel.add(new Option(opt, opt));
+                toSel.add(new Option(opt, opt));
+            });
+            
+            if (options.length > 1) {
+                fromSel.selectedIndex = 0;
+                toSel.selectedIndex = 1;
+            }
+            convertUnits();
         }
 
         function convertUnits() {
-            const input = parseFloat(document.getElementById('conv-input').value);
-            if (isNaN(input)) {
+            const val = parseFloat(document.getElementById('conv-input').value);
+            if (isNaN(val)) {
                 document.getElementById('conv-result').textContent = "---";
                 return;
             }
             
-            const fromVal = parseFloat(document.getElementById('conv-from').value);
-            const toVal = parseFloat(document.getElementById('conv-to').value);
+            const cat = document.getElementById('conv-category').value;
+            const from = document.getElementById('conv-from').value;
+            const to = document.getElementById('conv-to').value;
+            let result;
+
+            if (cat === 'temp') {
+                const base = units.temp.toBase(val, from);
+                result = units.temp.fromBase(base, to);
+            } else {
+                const rates = units[cat].rates;
+                const base = val * rates[from];
+                result = base / rates[to];
+            }
             
-            const result = input * (fromVal / toVal);
-            // Format: 1.23e+6
-            document.getElementById('conv-result').textContent = result.toExponential(2);
+            document.getElementById('conv-result').textContent = 
+                Math.abs(result) < 0.01 || Math.abs(result) > 10000 
+                ? result.toExponential(3) 
+                : parseFloat(result.toFixed(4));
         }
 
         // Clock Functionality
