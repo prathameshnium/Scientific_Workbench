@@ -37,6 +37,12 @@
         
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.35; }
+            50% { transform: scale(1.6); opacity: 0.6; }
+        }
+        .zen-circle { animation: breathe 8s infinite ease-in-out; }
     </style>
 </head>
 
@@ -67,9 +73,14 @@
         </div>
     </nav>
 
-    <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto">
+    <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto flex flex-col justify-center relative">
         
-        <div class="max-w-4xl mx-auto mb-10">
+        <div id="zen-breather" class="fixed inset-0 flex items-center justify-center pointer-events-none z-0 hidden">
+            <div class="absolute w-96 h-96 bg-accent-blue/20 rounded-full blur-3xl zen-circle"></div>
+            <div class="absolute w-[32rem] h-[32rem] bg-accent-green/10 rounded-full blur-3xl zen-circle" style="animation-delay: 2s;"></div>
+        </div>
+      
+        <div id="search-container" class="max-w-4xl mx-auto mb-10 transition-transform duration-300 scale-110 relative z-10">
             <form action="https://duckduckgo.com/" method="GET" id="searchForm" class="relative group" target="_blank" rel="noopener noreferrer" onsubmit="return handleSearch(event)">
                 <input type="text" id="searchInput" name="q" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-40 focus:outline-none focus:border-accent-green shadow-lg transition-colors" placeholder="Search with DuckDuckGo..." autofocus autocomplete="off">
                 <i class="fas fa-search absolute left-4 top-4 text-text-muted group-focus-within:text-accent-green" id="searchIcon"></i>
@@ -92,13 +103,14 @@
                     </button>
                     <div class="w-px h-4 bg-white/10 mx-1"></div>
                     <button type="button" onclick="toggleDecks()" class="p-2 text-gray-400 hover:text-white transition-colors" title="Toggle Decks">
-                        <i class="fas fa-eye" id="deck-toggle-icon"></i>
+                        <i class="fas fa-eye-slash" id="deck-toggle-icon"></i>
                     </button>
+
                 </div>
             </form>
         </div>
 
-        <div id="decks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div id="decks-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             
             <div class="space-y-4">
                 <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 1</h3>
@@ -211,6 +223,24 @@
                     </a>
                 </div>
             </div>
+
+
+            <!--Audio Section-->
+            <div class="space-y-4">
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Relaxing Sounds</h3>
+                    <div class="custom-card bg-card-bg p-4 rounded-xl text-center">
+                        <button onclick="playSound('whiteNoise')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">White Noise</button>
+                        <button onclick="playSound('rain')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Rain</button>
+                        <button onclick="playSound('forest')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Forest</button>
+                        <button onclick="playSound('cafe')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Cafe</button>
+                        <button onclick="stopSound()" class="bg-white/5 hover:bg-red-500 hover:text-white text-xs font-bold px-4 py-2 rounded transition-colors" title="Stop"><i class="fas fa-stop"></i></button>
+                
+                        <audio id="whiteNoise" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
+                        <audio id="rain" src="URL_TO_RAIN_SOUND" preload="auto"></audio>
+                        <audio id="forest" src="URL_TO_FOREST_SOUND" preload="auto"></audio>
+                        <audio id="cafe" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -259,15 +289,22 @@
             const grid = document.getElementById('decks-grid');
             const main = document.querySelector('main');
             const icon = document.getElementById('deck-toggle-icon');
+            const searchContainer = document.getElementById('search-container');
+            const breather = document.getElementById('zen-breather');
             
+
             if (grid.classList.contains('hidden')) {
                 grid.classList.remove('hidden');
                 main.classList.remove('flex', 'flex-col', 'justify-center');
+                searchContainer.classList.remove('scale-110');
+                breather.classList.add('hidden');
                 icon.className = 'fas fa-eye';
-            } else {
+           }  else {
+
                 grid.classList.add('hidden');
                 main.classList.add('flex', 'flex-col', 'justify-center');
-                icon.className = 'fas fa-eye-slash';
+                searchContainer.classList.add('scale-110');
+                breather.classList.remove('hidden');
             }
         }
 
@@ -481,6 +518,25 @@
             renderQuickLinks();
         }
 
+        // --- Relaxing Sounds ---
+        let currentSound;
+
+        function playSound(soundId) {
+            stopSound(); // Stop any currently playing sound
+            currentSound = document.getElementById(soundId);
+            currentSound.loop = true;
+            currentSound.play();
+        }
+
+        function stopSound() {
+            if (currentSound) {
+                currentSound.pause();
+                currentSound.currentTime = 0; // Reset to the beginning
+                currentSound = null;
+            }
+        }
+
+
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(updateTime, 1000); 
@@ -497,4 +553,7 @@
         });
     </script>
 </body>
+
+
+
 </html>
