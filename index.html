@@ -90,14 +90,18 @@
                     <button type="button" onclick="setEngine('doi')" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="DOI Resolver">
                         <i class="fas fa-barcode"></i>
                     </button>
+                    <div class="w-px h-4 bg-white/10 mx-1"></div>
+                    <button type="button" onclick="toggleDecks()" class="p-2 text-gray-400 hover:text-white transition-colors" title="Toggle Decks">
+                        <i class="fas fa-eye" id="deck-toggle-icon"></i>
+                    </button>
                 </div>
             </form>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div id="decks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Intelligence</h3>
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 1</h3>
                 
                 <a href="https://prathameshnium.github.io/Kusanagi-AI/" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
                     <span class="font-semibold text-sm block">Kusanagi AI</span>
@@ -122,7 +126,7 @@
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Science & News</h3>
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 2</h3>
                 <a href="https://www.nature.com/news" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
                     <span class="font-semibold text-sm block">Nature</span>
                     <p class="text-[10px] text-text-muted">Latest Science News</p>
@@ -158,7 +162,7 @@
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Development</h3>
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 3</h3>
                 <div class="flex gap-2">
                     <a href="https://github.com/prathameshnium" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">GitHub</a>
                     <a href="https://gitlab.com/" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">GitLab</a>
@@ -176,7 +180,7 @@
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Workspace</h3>
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 4</h3>
                 
                 <div class="custom-card bg-card-bg p-4 rounded-xl">
                     <div class="flex justify-between items-end mb-2">
@@ -249,6 +253,22 @@
                 return false;
             }
             return true;
+        }
+
+        function toggleDecks() {
+            const grid = document.getElementById('decks-grid');
+            const main = document.querySelector('main');
+            const icon = document.getElementById('deck-toggle-icon');
+            
+            if (grid.classList.contains('hidden')) {
+                grid.classList.remove('hidden');
+                main.classList.remove('flex', 'flex-col', 'justify-center');
+                icon.className = 'fas fa-eye';
+            } else {
+                grid.classList.add('hidden');
+                main.classList.add('flex', 'flex-col', 'justify-center');
+                icon.className = 'fas fa-eye-slash';
+            }
         }
 
         // --- Core Time & Date Logic ---
