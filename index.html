@@ -2,558 +2,1719 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
     <title>Scientific Workbench | Research Hub</title>
-    
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; connect-src 'self' https:;">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; connect-src 'self' https:;"
+    >
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'dark-bg': '#0f111a', 'card-bg': 'rgba(26, 29, 45, 0.85)',
-                        'accent-orange': '#F6AD55', 'accent-blue': '#63B3ED', 'accent-green': '#68D391',
-                        'text-main': '#E2E8F0', 'text-muted': '#94A3B8', 'border-color': 'rgba(255, 255, 255, 0.1)',
-                        'usage-track': 'rgba(255, 255, 255, 0.05)', 'usage-fill': '#F6AD55'
-                    }
-                }
-            }
-        }
+                        "dark-bg": "#0f111a",
+                        "card-bg": "rgba(26, 29, 45, 0.85)",
+                        "accent-orange": "#F6AD55",
+                        "accent-blue": "#63B3ED",
+                        "accent-green": "#68D391",
+                        "text-main": "#E2E8F0",
+                        "text-muted": "#94A3B8",
+                        "border-color": "rgba(255, 255, 255, 0.1)",
+                        "usage-track": "rgba(255, 255, 255, 0.05)",
+                        "usage-fill": "#F6AD55",
+                    },
+                },
+            },
+        };
     </script>
 
     <style>
         body {
-            background: linear-gradient(rgba(15, 17, 26, 0.75), rgba(15, 17, 26, 0.75)), 
-                        url('https://wallpapers.com/images/hd/minimalist-silhouette-mountains-sunset-landscape-tunex867612uvknp.jpg');
-            background-size: cover; background-position: center; background-attachment: fixed;
+            background:
+                linear-gradient(
+                    rgba(15, 17, 26, 0.75),
+                    rgba(15, 17, 26, 0.75)
+                ),
+                url("https://wallpapers.com/images/hd/minimalist-silhouette-mountains-sunset-landscape-tunex867612uvknp.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
-        .glass-panel { background: rgba(15, 17, 26, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .custom-card { backdrop-filter: blur(8px); transition: all 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .custom-card:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-        
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
+
+        .glass-panel {
+            background: rgba(15, 17, 26, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .custom-card {
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .custom-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
 
         @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.35; }
-            50% { transform: scale(1.6); opacity: 0.6; }
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.35;
+            }
+
+            50% {
+                transform: scale(1.6);
+                opacity: 0.6;
+            }
         }
-        .zen-circle { animation: breathe 8s infinite ease-in-out; }
+
+        .zen-circle {
+            animation: breathe 8s infinite ease-in-out;
+        }
+
+        #search-container.zen input#searchInput {
+            padding-top: 1.1rem;
+            padding-bottom: 1.1rem;
+            font-size: 1.15rem;
+        }
+
+        #audio-bar {
+            transition:
+                all 0.3s ease,
+                transform 0.3s ease,
+                opacity 0.3s ease;
+        }
+
+        #audio-bar .audio-shell {
+            transition:
+                padding 0.3s ease,
+                gap 0.3s ease,
+                border-color 0.3s ease,
+                background 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        #audio-bar .audio-label,
+        #audio-bar .audio-controls,
+        #audio-bar .audio-slider-wrap,
+        #audio-bar .audio-stop-wrap,
+        #audio-bar .sound-btn {
+            transition:
+                all 0.3s ease,
+                opacity 0.25s ease;
+        }
+
+        #audio-bar.audio-centered {
+            position: relative;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            width: 100%;
+            max-width: 56rem;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 1.5rem;
+            z-index: 10;
+            transform: none;
+            opacity: 1;
+        }
+
+        #audio-bar.audio-pod {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            left: auto;
+            width: auto;
+            max-width: min(92vw, 360px);
+            margin: 0;
+            z-index: 40;
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        #audio-bar.audio-centered .audio-shell {
+            border-width: 1px;
+            border-color: rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            padding: 0.5rem 1rem;
+            gap: 0.75rem;
+            box-shadow: none;
+        }
+
+        #audio-bar.audio-pod .audio-shell {
+            border-width: 1px;
+            border-color: rgba(104, 211, 145, 0.22);
+            border-radius: 1rem;
+            padding: 0.65rem 0.75rem;
+            gap: 0.5rem;
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        #audio-bar.audio-pod .audio-shell {
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #audio-bar.audio-pod .audio-label {
+            width: 100%;
+            font-size: 9px;
+            letter-spacing: 0.18em;
+            opacity: 0.8;
+        }
+
+        #audio-bar.audio-pod .audio-controls {
+            gap: 0.35rem;
+            flex: 1 1 100%;
+            width: 100%;
+        }
+
+        #audio-bar.audio-pod .sound-btn {
+            font-size: 10px;
+            padding: 0.35rem 0.55rem;
+            white-space: nowrap;
+        }
+
+        #audio-bar.audio-pod .audio-slider-wrap {
+            flex: 1 1 auto;
+            min-width: 86px;
+        }
+
+        #audio-bar.audio-pod #volume-slider {
+            width: 100%;
+        }
+
+        #audio-bar.audio-pod .audio-stop-wrap {
+            flex: 0 0 auto;
+        }
+
+        #audio-bar.audio-pod #stop-btn {
+            font-size: 10px;
+            padding: 0.35rem 0.55rem;
+        }
+
+        @media (max-width: 640px) {
+            #audio-bar.audio-pod {
+                right: 0.75rem;
+                bottom: 0.75rem;
+                max-width: calc(100vw - 1.5rem);
+            }
+        }
     </style>
 </head>
 
-<body class="antialiased font-sans text-text-main h-screen flex flex-col overflow-hidden">
-
-    <div id="latexModal" class="modal p-4" onclick="toggleModal()">
-        <div class="bg-card-bg border border-accent-blue p-6 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
+<body
+    class="antialiased font-sans text-text-main h-screen flex flex-col overflow-hidden"
+>
+    <!-- LaTeX Modal -->
+    <div
+        id="latexModal"
+        class="modal p-4"
+        onclick="toggleModal()"
+    >
+        <div
+            class="bg-card-bg border border-accent-blue p-6 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onclick="event.stopPropagation()"
+        >
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-accent-blue font-bold">LaTeX Symbols Quick-Ref</h2>
-                <button onclick="toggleModal()" class="text-text-muted hover:text-white">&times;</button>
+                <h2 class="text-accent-blue font-bold">
+                    LaTeX Symbols Quick-Ref
+                </h2>
+                <button
+                    onclick="toggleModal()"
+                    class="text-text-muted hover:text-white text-xl leading-none"
+                >
+                    &times;
+                </button>
             </div>
             <div class="grid grid-cols-2 gap-4 font-mono text-sm">
-                <div class="bg-black/30 p-2 rounded">$\alpha, \beta, \gamma$ : \alpha \beta \gamma</div>
-                <div class="bg-black/30 p-2 rounded">$\hbar, \partial, \nabla$ : \hbar \partial \nabla</div>
-                <div class="bg-black/30 p-2 rounded">$\int, \sum, \prod$ : \int \sum \prod</div>
-                <div class="bg-black/30 p-2 rounded">$\infty, \approx, \neq$ : \infty \approx \neq</div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\alpha, \beta, \gamma$ → \alpha \beta \gamma
+                </div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\hbar, \partial, \nabla$ → \hbar \partial \nabla
+                </div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\int, \sum, \prod$ → \int \sum \prod
+                </div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\infty, \approx, \neq$ → \infty \approx \neq
+                </div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\vec{v}, \hat{n}$ → \vec{v} \hat{n}
+                </div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\frac{a}{b}, \sqrt{x}$ → \frac{} \sqrt{}
+                </div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\pm, \times, \cdot$ → \pm \times \cdot
+                </div>
+                <div class="bg-black/30 p-2 rounded">
+                    $\leq, \geq, \ll, \gg$ → \leq \geq \ll \gg
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Navbar -->
     <nav class="glass-panel z-50">
-        <div class="container mx-auto px-6 h-14 flex justify-between items-center">
-            <span class="font-bold text-lg tracking-tight">Scientific<span class="text-accent-orange">.Workbench</span></span>
-            <div class="font-mono text-accent-blue text-lg font-semibold tracking-wider" id="clock">00:00:00</div>
-            <div class="hidden md:flex items-center gap-2 text-sm text-text-muted">
-                <span id="date"></span> <span id="date-marathi" class="text-accent-orange font-medium border-l border-white/20 pl-2"></span>
+        <div
+            class="container mx-auto px-6 h-14 flex justify-between items-center"
+        >
+            <span class="font-bold text-lg tracking-tight"
+                >Scientific<span class="text-accent-orange"
+                    >.Workbench</span
+                ></span
+            >
+            <div
+                class="font-mono text-accent-blue text-lg font-semibold tracking-wider"
+                id="clock"
+            >
+                00:00:00
+            </div>
+            <div
+                class="hidden md:flex items-center gap-2 text-sm text-text-muted"
+            >
+                <span id="date"></span>
+                <span
+                    id="date-marathi"
+                    class="text-accent-orange font-medium border-l border-white/20 pl-2"
+                ></span>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto flex flex-col justify-center relative">
-        
-        <div id="zen-breather" class="fixed inset-0 flex items-center justify-center pointer-events-none z-0 hidden">
-            <div class="absolute w-96 h-96 bg-accent-blue/20 rounded-full blur-3xl zen-circle"></div>
-            <div class="absolute w-[32rem] h-[32rem] bg-accent-green/10 rounded-full blur-3xl zen-circle" style="animation-delay: 2s;"></div>
+    <main
+        id="main"
+        class="flex-grow container mx-auto px-4 py-8 overflow-y-auto flex flex-col justify-center relative"
+    >
+        <!-- Zen Breather -->
+        <div
+            id="zen-breather"
+            class="fixed inset-0 flex items-center justify-center pointer-events-none z-0 hidden"
+        >
+            <div
+                class="absolute w-96 h-96 bg-accent-blue/20 rounded-full blur-3xl zen-circle"
+            ></div>
+            <div
+                class="absolute w-[32rem] h-[32rem] bg-accent-green/10 rounded-full blur-3xl zen-circle"
+                style="animation-delay: 2s;"
+            ></div>
         </div>
-      
-        <div id="search-container" class="max-w-4xl mx-auto mb-10 transition-transform duration-300 scale-110 relative z-10">
-            <form action="https://duckduckgo.com/" method="GET" id="searchForm" class="relative group" target="_blank" rel="noopener noreferrer" onsubmit="return handleSearch(event)">
-                <input type="text" id="searchInput" name="q" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-40 focus:outline-none focus:border-accent-green shadow-lg transition-colors" placeholder="Search with DuckDuckGo..." autofocus autocomplete="off">
-                <i class="fas fa-search absolute left-4 top-4 text-text-muted group-focus-within:text-accent-green" id="searchIcon"></i>
-                
+
+        <!-- Search Bar -->
+        <div
+            id="search-container"
+            class="zen w-full max-w-4xl mx-auto mb-4 transition-all duration-300 relative z-10"
+        >
+            <form
+                action="https://duckduckgo.com/"
+                method="GET"
+                id="searchForm"
+                class="relative group"
+                target="_blank"
+                rel="noopener noreferrer"
+                onsubmit="return handleSearch(event)"
+            >
+                <input
+                    type="text"
+                    id="searchInput"
+                    name="q"
+                    class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-44
+                           focus:outline-none focus:border-accent-green shadow-lg transition-all duration-300"
+                    placeholder="Search with DuckDuckGo..."
+                    autofocus
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+                <i
+                    class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-text-muted transition-colors"
+                    id="searchIcon"
+                ></i>
+
                 <div class="absolute inset-y-0 right-2 flex items-center gap-1">
-                    <button type="button" onclick="setEngine('duckduckgo')" class="p-2 text-gray-400 hover:text-accent-green transition-colors" title="DuckDuckGo">
-                        <img src="https://duckduckgo.com/favicon.ico" class="w-4 h-4 opacity-70 hover:opacity-100">
+                    <button
+                        type="button"
+                        onclick="setEngine('duckduckgo')"
+                        class="p-2 text-gray-400 hover:text-accent-green transition-colors"
+                        title="DuckDuckGo"
+                    >
+                        <img
+                            src="https://duckduckgo.com/favicon.ico"
+                            class="w-4 h-4 opacity-70 hover:opacity-100"
+                            alt="DDG"
+                        >
                     </button>
-                    <button type="button" onclick="setEngine('google')" class="p-2 text-gray-400 hover:text-white transition-colors" title="Google">
+                    <button
+                        type="button"
+                        onclick="setEngine('google')"
+                        class="p-2 text-gray-400 hover:text-white transition-colors"
+                        title="Google"
+                    >
                         <i class="fab fa-google"></i>
                     </button>
-                    <button type="button" onclick="setEngine('startpage')" class="p-2 text-gray-400 hover:text-accent-blue transition-colors" title="Startpage">
-                        <span class="font-bold text-[11px] tracking-tighter">SP</span>
+                    <button
+                        type="button"
+                        onclick="setEngine('startpage')"
+                        class="p-2 text-gray-400 hover:text-accent-blue transition-colors"
+                        title="Startpage"
+                    >
+                        <span class="font-bold text-[11px] tracking-tighter"
+                            >SP</span
+                        >
                     </button>
-                    <button type="button" onclick="setEngine('scholar')" class="p-2 text-gray-400 hover:text-accent-orange transition-colors border-l border-white/10 pl-3 ml-1" title="Google Scholar">
+                    <button
+                        type="button"
+                        onclick="setEngine('scholar')"
+                        class="p-2 text-gray-400 hover:text-accent-orange transition-colors border-l border-white/10 pl-3 ml-1"
+                        title="Google Scholar"
+                    >
                         <i class="fas fa-graduation-cap"></i>
                     </button>
-                    <button type="button" onclick="setEngine('doi')" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="DOI Resolver">
+                    <button
+                        type="button"
+                        onclick="setEngine('doi')"
+                        class="p-2 text-gray-400 hover:text-yellow-400 transition-colors"
+                        title="DOI Resolver"
+                    >
                         <i class="fas fa-barcode"></i>
                     </button>
                     <div class="w-px h-4 bg-white/10 mx-1"></div>
-                    <button type="button" onclick="toggleDecks()" class="p-2 text-gray-400 hover:text-white transition-colors" title="Toggle Decks">
-                        <i class="fas fa-eye-slash" id="deck-toggle-icon"></i>
+                    <button
+                        type="button"
+                        onclick="toggleDecks()"
+                        class="p-2 text-gray-400 hover:text-white transition-colors"
+                        title="Toggle Decks"
+                    >
+                        <i class="fas fa-eye" id="deck-toggle-icon"></i>
                     </button>
-
                 </div>
             </form>
         </div>
 
-        <div id="decks-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            
+        <!-- Persistent Minimalist Audio Bar -->
+        <div
+            id="audio-bar"
+            class="audio-centered w-full mx-auto mb-6 relative z-10"
+        >
+            <div
+                class="audio-shell bg-card-bg border border-white/8 rounded-xl px-4 py-2
+                        flex items-center gap-3 backdrop-blur-md"
+            >
+                <span
+                    class="audio-label text-text-muted text-[10px] uppercase tracking-widest font-mono shrink-0"
+                >
+                    Ambient
+                </span>
+                <div class="audio-controls flex gap-2 flex-1 flex-wrap">
+                    <button
+                        onclick="playSound('whitenoise')"
+                        id="btn-whitenoise"
+                        class="sound-btn text-[11px] font-semibold px-3 py-1 rounded-full
+                               border border-white/10 text-text-muted hover:text-white
+                               hover:border-white/40 transition-all duration-200"
+                    >
+                        ◎ White Noise
+                    </button>
+                    <button
+                        onclick="playSound('rain')"
+                        id="btn-rain"
+                        class="sound-btn text-[11px] font-semibold px-3 py-1 rounded-full
+                               border border-white/10 text-text-muted hover:text-white
+                               hover:border-white/40 transition-all duration-200"
+                    >
+                        ◎ Rain
+                    </button>
+                    <button
+                        onclick="playSound('forest')"
+                        id="btn-forest"
+                        class="sound-btn text-[11px] font-semibold px-3 py-1 rounded-full
+                               border border-white/10 text-text-muted hover:text-white
+                               hover:border-white/40 transition-all duration-200"
+                    >
+                        ◎ Forest
+                    </button>
+                    <button
+                        onclick="playSound('cafe')"
+                        id="btn-cafe"
+                        class="sound-btn text-[11px] font-semibold px-3 py-1 rounded-full
+                               border border-white/10 text-text-muted hover:text-white
+                               hover:border-white/40 transition-all duration-200"
+                    >
+                        ◎ Café
+                    </button>
+                </div>
+                <div class="audio-slider-wrap shrink-0">
+                    <input
+                        type="range"
+                        id="volume-slider"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value="0.4"
+                        oninput="setVolume(this.value)"
+                        class="w-20 accent-accent-green shrink-0 hidden"
+                        title="Volume"
+                    >
+                </div>
+                <div class="audio-stop-wrap shrink-0">
+                    <button
+                        onclick="stopSound()"
+                        id="stop-btn"
+                        class="hidden shrink-0 text-[10px] font-bold px-2 py-1 rounded
+                           bg-red-500/20 text-red-400 hover:bg-red-500/40 transition-all"
+                    >
+                        ■ Stop
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decks Grid (hidden by default = zen mode on load) -->
+        <div
+            id="decks-grid"
+            class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto w-full"
+        >
+            <!-- Deck 1 -->
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 1</h3>
-                
-                <a href="https://prathameshnium.github.io/Kusanagi-AI/" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
+                <h3
+                    class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2"
+                >
+                    Deck 1
+                </h3>
+
+                <a
+                    href="https://prathameshnium.github.io/Kusanagi-AI/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="custom-card block bg-card-bg p-3 rounded-lg"
+                >
                     <span class="font-semibold text-sm block">Kusanagi AI</span>
-                    <p class="text-[10px] text-text-muted">Local Neural Interface</p>
+                    <p class="text-[10px] text-text-muted">
+                        Local Neural Interface
+                    </p>
                 </a>
 
-                <!-- Local Quick Links -->
-                <div class="custom-card bg-card-bg p-3 rounded-lg border border-white/5">
+                <!-- Quick Links -->
+                <div
+                    class="custom-card bg-card-bg p-3 rounded-lg border border-white/5"
+                >
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-white text-xs uppercase tracking-wide">Quick Links</span>
+                        <span
+                            class="font-bold text-white text-xs uppercase tracking-wide"
+                            >Quick Links</span
+                        >
                         <i class="fas fa-link text-text-muted text-xs"></i>
                     </div>
                     <div id="quick-links-list" class="space-y-1 mb-2"></div>
                     <div class="flex gap-1">
-                        <input type="text" id="ql-title" placeholder="Name" class="w-1/3 bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none">
-                        <input type="text" id="ql-url" placeholder="URL" class="w-full bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onkeypress="if(event.key==='Enter') addQuickLink()">
-                        <button onclick="addQuickLink()" class="bg-white/5 hover:bg-accent-green text-white px-2 py-1 rounded transition-colors"><i class="fas fa-plus text-xs"></i></button>
+                        <input
+                            type="text"
+                            id="ql-title"
+                            placeholder="Name"
+                            maxlength="60"
+                            class="w-1/3 bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none"
+                        >
+                        <input
+                            type="text"
+                            id="ql-url"
+                            placeholder="URL"
+                            maxlength="300"
+                            class="w-full bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none"
+                            onkeydown="if(event.key==='Enter') addQuickLink()"
+                        >
+                        <button
+                            onclick="addQuickLink()"
+                            class="bg-white/5 hover:bg-accent-green hover:text-black text-white px-2 py-1 rounded transition-colors"
+                        >
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
-                <textarea id="local-note" class="w-full h-48 bg-card-bg border border-border-color rounded-lg p-2 text-xs text-text-main focus:outline-none font-mono custom-card resize-none" placeholder="Local scratchpad..."></textarea>
+                <textarea
+                    id="local-note"
+                    class="w-full h-48 bg-card-bg border border-border-color rounded-lg p-2 text-xs text-text-main focus:outline-none font-mono custom-card resize-none"
+                    placeholder="Local scratchpad..."
+                    maxlength="5000"
+                ></textarea>
             </div>
 
+            <!-- Deck 2 -->
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 2</h3>
-                <a href="https://www.nature.com/news" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
+                <h3
+                    class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2"
+                >
+                    Deck 2
+                </h3>
+                <a
+                    href="https://www.nature.com/news"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="custom-card block bg-card-bg p-3 rounded-lg"
+                >
                     <span class="font-semibold text-sm block">Nature</span>
-                    <p class="text-[10px] text-text-muted">Latest Science News</p>
+                    <p class="text-[10px] text-text-muted">
+                        Latest Science News
+                    </p>
                 </a>
-                <a href="https://www.science.org/news" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
-                    <span class="font-semibold text-sm block">Science Magazine</span>
-                    <p class="text-[10px] text-text-muted">News & Publications</p>
+                <a
+                    href="https://www.science.org/news"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="custom-card block bg-card-bg p-3 rounded-lg"
+                >
+                    <span class="font-semibold text-sm block"
+                        >Science Magazine</span
+                    >
+                    <p class="text-[10px] text-text-muted">
+                        News & Publications
+                    </p>
                 </a>
-                <a href="https://arxiv.org/list/physics/new" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
-                    <span class="font-semibold text-sm block">arXiv Physics</span>
+                <a
+                    href="https://arxiv.org/list/physics/new"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="custom-card block bg-card-bg p-3 rounded-lg"
+                >
+                    <span class="font-semibold text-sm block"
+                        >arXiv Physics</span
+                    >
                     <p class="text-[10px] text-text-muted">New Preprints</p>
                 </a>
 
                 <!-- Unit Converter -->
                 <div class="custom-card bg-card-bg p-4 rounded-xl">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="font-bold text-white tracking-wide text-xs uppercase">Unit Converter</span>
-                        <i class="fas fa-exchange-alt text-accent-blue text-xs"></i>
+                        <span
+                            class="font-bold text-white tracking-wide text-xs uppercase"
+                            >Unit Converter</span
+                        >
+                        <i
+                            class="fas fa-exchange-alt text-accent-blue text-xs"
+                        ></i>
                     </div>
-                    <select id="conv-category" class="w-full bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-text-muted focus:border-accent-blue focus:outline-none mb-2" onchange="updateUnitOptions()">
-                        <option value="prefix">Metric Prefixes (Mega, Micro...)</option>
-                        <option value="length">Length (m, ft, mi...)</option>
-                        <option value="mass">Mass (kg, lb, oz...)</option>
+                    <select
+                        id="conv-category"
+                        class="w-full bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-text-muted focus:border-accent-blue focus:outline-none mb-2"
+                        onchange="updateUnitOptions()"
+                    >
+                        <option value="prefix">
+                            Metric Prefixes (Mega, Micro…)
+                        </option>
+                        <option value="length">Length (m, ft, mi…)</option>
+                        <option value="mass">Mass (kg, lb, oz…)</option>
                         <option value="temp">Temperature (C, F, K)</option>
                     </select>
                     <div class="flex gap-1 mb-2">
-                        <input type="number" id="conv-input" placeholder="Val" class="w-1/3 bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" oninput="convertUnits()">
-                        <select id="conv-from" class="w-1/3 bg-dark-bg border border-white/10 rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
-                        <select id="conv-to" class="w-1/3 bg-dark-bg border border-white/10 rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
+                        <input
+                            type="number"
+                            id="conv-input"
+                            placeholder="Val"
+                            class="w-1/3 bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none"
+                            oninput="convertUnits()"
+                        >
+                        <select
+                            id="conv-from"
+                            class="w-1/3 bg-dark-bg border border-white/10 rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none"
+                            onchange="convertUnits()"
+                        ></select>
+                        <select
+                            id="conv-to"
+                            class="w-1/3 bg-dark-bg border border-white/10 rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none"
+                            onchange="convertUnits()"
+                        ></select>
                     </div>
-                    <div id="conv-result" class="text-right font-mono text-sm text-accent-orange font-bold">---</div>
+                    <div
+                        id="conv-result"
+                        class="text-right font-mono text-sm text-accent-orange font-bold"
+                    >
+                        ---
+                    </div>
                 </div>
             </div>
 
+            <!-- Deck 3 -->
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 3</h3>
+                <h3
+                    class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2"
+                >
+                    Deck 3
+                </h3>
                 <div class="flex gap-2">
-                    <a href="https://github.com/prathameshnium" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">GitHub</a>
-                    <a href="https://gitlab.com/" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">GitLab</a>
+                    <a
+                        href="https://github.com/prathameshnium"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors"
+                        >GitHub</a
+                    >
+                    <a
+                        href="https://gitlab.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors"
+                        >GitLab</a
+                    >
                 </div>
-                
-                <a href="https://www.overleaf.com/project" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
+                <a
+                    href="https://www.overleaf.com/project"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="custom-card block bg-card-bg p-3 rounded-lg"
+                >
                     <span class="font-semibold text-sm block">Overleaf</span>
-                    <p class="text-[10px] text-text-muted">Active LaTeX Projects</p>
+                    <p class="text-[10px] text-text-muted">
+                        Active LaTeX Projects
+                    </p>
                 </a>
-                
                 <div class="flex gap-2">
-                    <a href="https://www.zotero.org/mylibrary" target="_blank" rel="noopener noreferrer" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors">Zotero</a>
-                    <button onclick="toggleModal()" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:text-accent-blue transition-colors">LaTeX Ref</button>
+                    <a
+                        href="https://www.zotero.org/mylibrary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:bg-white/10 transition-colors"
+                        >Zotero</a
+                    >
+                    <button
+                        onclick="toggleModal()"
+                        class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold hover:text-accent-blue transition-colors"
+                    >
+                        LaTeX Ref
+                    </button>
                 </div>
             </div>
 
+            <!-- Deck 4 -->
             <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Deck 4</h3>
-                
+                <h3
+                    class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2"
+                >
+                    Deck 4
+                </h3>
+
                 <div class="custom-card bg-card-bg p-4 rounded-xl">
                     <div class="flex justify-between items-end mb-2">
                         <span class="text-white text-sm">4 Hour Timer</span>
-                        <div class="text-text-muted text-sm flex items-center gap-1.5 font-medium">
-                            <i class="far fa-clock"></i><span id="usage-time-left">-- minutes</span>
+                        <div
+                            class="text-text-muted text-sm flex items-center gap-1.5 font-medium"
+                        >
+                            <i class="far fa-clock"></i>
+                            <span id="usage-time-left">-- minutes</span>
                         </div>
                     </div>
-                    <div class="w-full bg-usage-track rounded-full h-2.5 overflow-hidden border border-white/5">
-                        <div id="usage-progress-bar" class="bg-usage-fill h-full transition-all duration-1000 rounded-full" style="width: 0%"></div>
+                    <div
+                        class="w-full bg-usage-track rounded-full h-2.5 overflow-hidden border border-white/5"
+                    >
+                        <div
+                            id="usage-progress-bar"
+                            class="bg-usage-fill h-full transition-all duration-1000 rounded-full"
+                            style="width: 0%;"
+                        ></div>
                     </div>
                 </div>
 
                 <div class="custom-card bg-card-bg p-4 rounded-xl text-center">
-                    <div class="text-3xl font-mono text-white mb-3 tracking-widest" id="pomodoro-display">25:00</div>
+                    <div
+                        class="text-3xl font-mono text-white mb-3 tracking-widest"
+                        id="pomodoro-display"
+                    >
+                        25:00
+                    </div>
                     <div class="flex w-full gap-2">
-                        <button onclick="toggleTimer()" id="pomo-btn" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Start</button>
-                        <button onclick="resetPomodoro()" class="bg-white/5 hover:bg-red-500 hover:text-white text-xs font-bold px-4 py-2 rounded transition-colors" title="Reset"><i class="fas fa-redo-alt"></i></button>
+                        <button
+                            onclick="toggleTimer()"
+                            id="pomo-btn"
+                            class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider"
+                        >
+                            Start
+                        </button>
+                        <button
+                            onclick="resetPomodoro()"
+                            class="bg-white/5 hover:bg-red-500 hover:text-white text-xs font-bold px-4 py-2 rounded transition-colors"
+                            title="Reset"
+                        >
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
                     </div>
                 </div>
 
                 <div class="flex gap-2">
-                    <a href="https://keep.google.com/" target="_blank" rel="noopener noreferrer" class="flex-1 custom-card block bg-card-bg p-2 rounded text-center hover:bg-white/10 transition-colors text-xs font-bold">
-                        <i class="far fa-lightbulb text-accent-orange mr-1"></i> Keep
+                    <a
+                        href="https://keep.google.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex-1 custom-card block bg-card-bg p-2 rounded text-center hover:bg-white/10 transition-colors text-xs font-bold"
+                    >
+                        <i class="far fa-lightbulb text-accent-orange mr-1"></i>
+                        Keep
                     </a>
-                    <a href="https://bsky.app/" target="_blank" rel="noopener noreferrer" class="flex-1 custom-card block bg-card-bg p-2 rounded text-center hover:bg-white/10 transition-colors text-xs font-bold">
-                        <i class="fas fa-cloud text-accent-blue mr-1"></i> Bluesky
+                    <a
+                        href="https://bsky.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex-1 custom-card block bg-card-bg p-2 rounded text-center hover:bg-white/10 transition-colors text-xs font-bold"
+                    >
+                        <i class="fas fa-cloud text-accent-blue mr-1"></i>
+                        Bluesky
                     </a>
-                </div>
-            </div>
-
-
-            <!--Audio Section-->
-            <div class="space-y-4">
-                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Relaxing Sounds</h3>
-                    <div class="custom-card bg-card-bg p-4 rounded-xl text-center">
-                        <button onclick="playSound('whiteNoise')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">White Noise</button>
-                        <button onclick="playSound('rain')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Rain</button>
-                        <button onclick="playSound('forest')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Forest</button>
-                        <button onclick="playSound('cafe')" class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider">Cafe</button>
-                        <button onclick="stopSound()" class="bg-white/5 hover:bg-red-500 hover:text-white text-xs font-bold px-4 py-2 rounded transition-colors" title="Stop"><i class="fas fa-stop"></i></button>
-                
-                        <audio id="whiteNoise" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
-                        <audio id="rain" src="URL_TO_RAIN_SOUND" preload="auto"></audio>
-                        <audio id="forest" src="URL_TO_FOREST_SOUND" preload="auto"></audio>
-                        <audio id="cafe" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // --- Search Engine Switcher ---
-        let currentSearchEngine = 'duckduckgo';
+        // ─── Constants ────────────────────────────────────────────────────────────
+        const ALLOWED_PROTOCOLS = ["http:", "https:"];
+        const MAX_LINKS = 20;
 
-        function setEngine(engine) {
-            currentSearchEngine = engine;
-            const form = document.getElementById('searchForm');
-            const input = document.getElementById('searchInput');
-            const icon = document.getElementById('searchIcon');
-            
-            const engines = {
-                duckduckgo: { url: "https://duckduckgo.com/", placeholder: "Search with DuckDuckGo...", color: "text-accent-green" },
-                google: { url: "https://www.google.com/search", placeholder: "Search with Google...", color: "text-white" },
-                startpage: { url: "https://www.startpage.com/sp/search", placeholder: "Search with Startpage...", color: "text-accent-blue" },
-                scholar: { url: "https://scholar.google.com/scholar", placeholder: "Search Google Scholar...", color: "text-accent-orange" },
-                doi: { url: "https://doi.org/", placeholder: "Paste DOI (e.g. 10.1038/nature123)...", color: "text-yellow-400" }
-            };
+        // ─── URL Sanitiser ────────────────────────────────────────────────────────
+        function sanitizeURL(url) {
+            try {
+                const u = new URL(url);
+                return ALLOWED_PROTOCOLS.includes(u.protocol) ? u.href : "#";
+            } catch {
+                return "#";
+            }
+        }
 
-            form.action = engines[engine].url;
-            input.placeholder = engines[engine].placeholder;
-            
-            // Update icon color based on selection
-            icon.className = `fas fa-search absolute left-4 top-4 group-focus-within:${engines[engine].color} ${engines[engine].color}`;
-            input.className = `w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-40 focus:outline-none focus:border-${engines[engine].color.split('-')[1]} shadow-lg transition-colors`;
+        // ─── Search Engine Switcher ───────────────────────────────────────────────
+        let currentEngine = "duckduckgo";
+
+        const ENGINES = {
+            duckduckgo: {
+                url: "https://duckduckgo.com/",
+                param: "q",
+                placeholder: "Search with DuckDuckGo…",
+                iconColor: "#68D391",
+            },
+            google: {
+                url: "https://www.google.com/search",
+                param: "q",
+                placeholder: "Search with Google…",
+                iconColor: "#E2E8F0",
+            },
+            startpage: {
+                url: "https://www.startpage.com/sp/search",
+                param: "q",
+                placeholder: "Search with Startpage…",
+                iconColor: "#63B3ED",
+            },
+            scholar: {
+                url: "https://scholar.google.com/scholar",
+                param: "q",
+                placeholder: "Search Google Scholar…",
+                iconColor: "#F6AD55",
+            },
+            doi: {
+                url: "https://doi.org/",
+                param: null,
+                placeholder: "Paste DOI (e.g. 10.1038/…)…",
+                iconColor: "#F6E05E",
+            },
+        };
+
+        function setEngine(name) {
+            if (!ENGINES[name]) return;
+            currentEngine = name;
+            const e = ENGINES[name];
+            const form = document.getElementById("searchForm");
+            const input = document.getElementById("searchInput");
+            const icon = document.getElementById("searchIcon");
+
+            form.action = e.url;
+            input.placeholder = e.placeholder;
+            icon.style.color = e.iconColor;
             input.focus();
         }
 
-        function handleSearch(e) {
-            if (currentSearchEngine === 'doi') {
-                e.preventDefault();
-                const query = document.getElementById('searchInput').value.trim();
-                if (query) {
-                    // Clean DOI input if user pasted full URL (removes https://doi.org/ prefix)
-                    const cleanQuery = query.replace(/^(https?:\/\/)?(dx\.)?doi\.org\//i, '');
-                    window.open(`https://doi.org/${cleanQuery}`, '_blank');
+        function handleSearch(evt) {
+            if (currentEngine === "doi") {
+                evt.preventDefault();
+                const raw = document.getElementById("searchInput").value.trim();
+                if (!raw) return false;
+                const clean = raw.replace(
+                    /^(https?:\/\/)?(dx\.)?doi\.org\//i,
+                    ""
+                );
+                if (!/^10\.\d{4,}\/\S+$/.test(clean)) {
+                    alert("Invalid DOI format. Expected: 10.XXXX/...");
+                    return false;
                 }
+                window.open(
+                    "https://doi.org/" + encodeURIComponent(clean),
+                    "_blank",
+                    "noopener,noreferrer"
+                );
                 return false;
             }
             return true;
         }
 
+        // ─── Toggle Decks / Zen Mode ──────────────────────────────────────────────
         function toggleDecks() {
-            const grid = document.getElementById('decks-grid');
-            const main = document.querySelector('main');
-            const icon = document.getElementById('deck-toggle-icon');
-            const searchContainer = document.getElementById('search-container');
-            const breather = document.getElementById('zen-breather');
-            
+            const grid = document.getElementById("decks-grid");
+            const main = document.getElementById("main");
+            const icon = document.getElementById("deck-toggle-icon");
+            const search = document.getElementById("search-container");
+            const audioBar = document.getElementById("audio-bar");
+            const breather = document.getElementById("zen-breather");
+            const isHidden = grid.classList.contains("hidden");
 
-            if (grid.classList.contains('hidden')) {
-                grid.classList.remove('hidden');
-                main.classList.remove('flex', 'flex-col', 'justify-center');
-                searchContainer.classList.remove('scale-110');
-                breather.classList.add('hidden');
-                icon.className = 'fas fa-eye';
-           }  else {
-
-                grid.classList.add('hidden');
-                main.classList.add('flex', 'flex-col', 'justify-center');
-                searchContainer.classList.add('scale-110');
-                breather.classList.remove('hidden');
+            if (isHidden) {
+                grid.classList.remove("hidden");
+                main.classList.remove("justify-center");
+                search.classList.remove("zen");
+                audioBar.classList.remove("audio-centered");
+                audioBar.classList.add("audio-pod");
+                breather.classList.add("hidden");
+                icon.className = "fas fa-eye";
+            } else {
+                grid.classList.add("hidden");
+                main.classList.add("justify-center");
+                search.classList.add("zen");
+                audioBar.classList.remove("audio-pod");
+                audioBar.classList.add("audio-centered");
+                breather.classList.remove("hidden");
+                icon.className = "fas fa-eye-slash";
             }
         }
 
-        // --- Core Time & Date Logic ---
+        // ─── Clock & Date ─────────────────────────────────────────────────────────
         function updateTime() {
             const now = new Date();
-            document.getElementById('clock').textContent = `${now.toLocaleTimeString('en-GB')} | ${now.toLocaleTimeString('en-US')}`;
-            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
-            document.getElementById('date-marathi').textContent = now.toLocaleDateString('mr-IN', { weekday: 'long' });
+            document.getElementById("clock").textContent =
+                now.toLocaleTimeString("en-GB") +
+                " | " +
+                now.toLocaleTimeString("en-US");
+            document.getElementById("date").textContent =
+                now.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                });
+            document.getElementById("date-marathi").textContent =
+                now.toLocaleDateString("mr-IN", { weekday: "long" });
         }
 
-        // --- Usage Tracker Logic ---
+        // ─── 4-Hour Usage Tracker ─────────────────────────────────────────────────
         function updateUsageTracker() {
             const now = new Date();
-            const cycleDuration = 4 * 60 * 60 * 1000; // 4 hours in ms
-            const offset = 2 * 60 * 60 * 1000; // Offset for cycles starting at 2, 6, 10, 14, 18, 22
-            
-            // Calculate time elapsed since midnight
-            const msSinceMidnight = (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) * 1000 + now.getMilliseconds();
-            
-            // Calculate time remaining in current 4-hour cycle
-            // Use standard modulo arithmetic with offset handling for negative results
-            const msInCurrentCycle = ((msSinceMidnight - offset) % cycleDuration + cycleDuration) % cycleDuration;
-            const msRemaining = cycleDuration - msInCurrentCycle;
-            const diffSeconds = Math.floor(msRemaining / 1000);
+            const CYCLE = 4 * 3600 * 1000;
+            const OFFSET = 2 * 3600 * 1000;
+            const msSinceMidnight =
+                (now.getHours() * 3600 +
+                    now.getMinutes() * 60 +
+                    now.getSeconds()) *
+                1000;
+            const msInCycle =
+                ((msSinceMidnight - OFFSET) % CYCLE + CYCLE) % CYCLE;
+            const msLeft = CYCLE - msInCycle;
+            const secLeft = Math.floor(msLeft / 1000);
+            const h = Math.floor(secLeft / 3600);
+            const m = Math.floor((secLeft % 3600) / 60);
 
-            const h = Math.floor(diffSeconds / 3600);
-            const m = Math.floor((diffSeconds % 3600) / 60);
-            
-            let timeText = h > 0 ? `${h}h ${m}m` : `${m} minutes`;
-            
-            // Standard logic: Show how much capacity is LEFT. 
-            // At start of cycle (4h left) -> 100% bar. At end (0m left) -> 0% bar.
-            const totalSeconds = 4 * 3600;
-            const percentage = (diffSeconds / totalSeconds) * 100;
-
-            document.getElementById('usage-time-left').textContent = timeText;
-            document.getElementById('usage-progress-bar').style.width = `${percentage}%`;
+            document.getElementById("usage-time-left").textContent =
+                h > 0 ? `${h}h ${m}m` : `${m} min`;
+            document.getElementById("usage-progress-bar").style.width =
+                (secLeft / (4 * 3600)) * 100 + "%";
         }
 
-        // --- Standard Pomodoro Logic ---
-        const pomoTotalSeconds = 1500; // 25 minutes
-        let pomoSecondsLeft = pomoTotalSeconds;
-        let pomoInterval;
+        // ─── Pomodoro ─────────────────────────────────────────────────────────────
+        const POMO_TOTAL = 1500;
+        let pomoLeft = POMO_TOTAL;
+        let pomoTimer = null;
         let pomoRunning = false;
 
         function toggleTimer() {
-            const btn = document.getElementById('pomo-btn');
-            if (pomoRunning) { 
-                clearInterval(pomoInterval); 
-                btn.textContent = "Resume"; 
-                pomoRunning = false; 
+            const btn = document.getElementById("pomo-btn");
+            if (pomoRunning) {
+                clearInterval(pomoTimer);
+                btn.textContent = "Resume";
+                pomoRunning = false;
             } else {
-                pomoInterval = setInterval(() => {
-                    if (pomoSecondsLeft > 0) { 
-                        pomoSecondsLeft--; 
-                        updatePomoDisplay(); 
-                    } else { 
-                        clearInterval(pomoInterval); 
-                        alert('Focus Session Complete!'); 
-                        resetPomodoro(); 
+                pomoTimer = setInterval(() => {
+                    if (pomoLeft > 0) {
+                        pomoLeft--;
+                        renderPomo();
+                    } else {
+                        clearInterval(pomoTimer);
+                        pomoRunning = false;
+                        showToast("🍅 Focus session complete!");
+                        resetPomodoro();
                     }
                 }, 1000);
-                btn.textContent = "Pause"; 
+                btn.textContent = "Pause";
                 pomoRunning = true;
             }
         }
 
-        function updatePomoDisplay() {
-            const m = Math.floor(pomoSecondsLeft / 60);
-            const s = pomoSecondsLeft % 60;
-            document.getElementById('pomodoro-display').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        function renderPomo() {
+            const m = String(Math.floor(pomoLeft / 60)).padStart(2, "0");
+            const s = String(pomoLeft % 60).padStart(2, "0");
+            document.getElementById("pomodoro-display").textContent =
+                `${m}:${s}`;
         }
 
-        function resetPomodoro() { 
-            clearInterval(pomoInterval); 
-            pomoSecondsLeft = pomoTotalSeconds; 
+        function resetPomodoro() {
+            clearInterval(pomoTimer);
+            pomoLeft = POMO_TOTAL;
             pomoRunning = false;
-            document.getElementById('pomo-btn').textContent = "Start";
-            updatePomoDisplay(); 
+            document.getElementById("pomo-btn").textContent = "Start";
+            renderPomo();
         }
 
+        // ─── Toast Notification ───────────────────────────────────────────────────
+        function showToast(msg) {
+            const t = document.createElement("div");
+            t.textContent = msg;
+            t.className =
+                "fixed bottom-6 left-1/2 -translate-x-1/2 bg-card-bg border border-accent-green " +
+                "text-white text-sm px-5 py-3 rounded-xl shadow-xl z-50 transition-opacity duration-500";
+            document.body.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = "0";
+                setTimeout(() => t.remove(), 500);
+            }, 3000);
+        }
+
+        // ─── LaTeX Modal ──────────────────────────────────────────────────────────
         function toggleModal() {
-            document.getElementById('latexModal').classList.toggle('active');
+            document.getElementById("latexModal").classList.toggle("active");
         }
 
-        // --- Unit Converter Logic ---
-        const unitData = {
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                document.getElementById("latexModal").classList.remove("active");
+            }
+        });
+
+        // ─── Unit Converter ───────────────────────────────────────────────────────
+        const UNIT_DATA = {
             prefix: {
-                rates: { 
-                    'Tera (T)': 1e12, 'Giga (G)': 1e9, 'Mega (M)': 1e6, 'Kilo (k)': 1e3, 
-                    'Base': 1, 
-                    'milli (m)': 1e-3, 'micro (µ)': 1e-6, 'nano (n)': 1e-9, 'pico (p)': 1e-12 
-                }
+                rates: {
+                    "Tera (T)": 1e12,
+                    "Giga (G)": 1e9,
+                    "Mega (M)": 1e6,
+                    "Kilo (k)": 1e3,
+                    Base: 1,
+                    "milli (m)": 1e-3,
+                    "micro (µ)": 1e-6,
+                    "nano (n)": 1e-9,
+                    "pico (p)": 1e-12,
+                },
             },
             length: {
-                rates: { 'm': 1, 'km': 1000, 'cm': 0.01, 'mm': 0.001, 'mi': 1609.34, 'ft': 0.3048, 'in': 0.0254 }
+                rates: {
+                    m: 1,
+                    km: 1e3,
+                    cm: 0.01,
+                    mm: 0.001,
+                    mi: 1609.34,
+                    ft: 0.3048,
+                    in: 0.0254,
+                },
             },
             mass: {
-                rates: { 'kg': 1, 'g': 0.001, 'mg': 1e-6, 'lb': 0.453592, 'oz': 0.0283495 }
+                rates: {
+                    kg: 1,
+                    g: 0.001,
+                    mg: 1e-6,
+                    lb: 0.453592,
+                    oz: 0.0283495,
+                },
             },
-            temp: {
-                type: 'special',
-                values: ['C', 'F', 'K']
-            }
+            temp: { type: "special", values: ["C", "F", "K"] },
         };
 
         function updateUnitOptions() {
-            const cat = document.getElementById('conv-category').value;
-            const fromSel = document.getElementById('conv-from');
-            const toSel = document.getElementById('conv-to');
-            
-            fromSel.innerHTML = '';
-            toSel.innerHTML = '';
-
-            let options = [];
-            if (unitData[cat].type === 'special') {
-                options = unitData[cat].values;
-            } else {
-                options = Object.keys(unitData[cat].rates);
-            }
-
-            options.forEach(opt => {
-                fromSel.add(new Option(opt, opt));
-                toSel.add(new Option(opt, opt));
+            const cat = document.getElementById("conv-category").value;
+            const from = document.getElementById("conv-from");
+            const to = document.getElementById("conv-to");
+            from.innerHTML = "";
+            to.innerHTML = "";
+            const opts =
+                UNIT_DATA[cat].type === "special"
+                    ? UNIT_DATA[cat].values
+                    : Object.keys(UNIT_DATA[cat].rates);
+            opts.forEach((o) => {
+                from.add(new Option(o, o));
+                to.add(new Option(o, o));
             });
-
-            // Set logical defaults
-            toSel.selectedIndex = options.length > 1 ? 1 : 0;
+            to.selectedIndex = opts.length > 1 ? 1 : 0;
             convertUnits();
         }
 
         function convertUnits() {
-            const cat = document.getElementById('conv-category').value;
-            const val = parseFloat(document.getElementById('conv-input').value);
-            const from = document.getElementById('conv-from').value;
-            const to = document.getElementById('conv-to').value;
-            const resDisplay = document.getElementById('conv-result');
-
-            if (isNaN(val)) { resDisplay.textContent = "---"; return; }
-
-            let result;
-            if (cat === 'temp') {
-                let cel = val; // Convert to Celsius first
-                if (from === 'F') cel = (val - 32) * 5/9;
-                if (from === 'K') cel = val - 273.15;
-                
-                if (to === 'C') result = cel;
-                else if (to === 'F') result = (cel * 9/5) + 32;
-                else if (to === 'K') result = cel + 273.15;
-            } else {
-                const rates = unitData[cat].rates;
-                result = val * (rates[from] / rates[to]);
+            const cat = document.getElementById("conv-category").value;
+            const val = parseFloat(document.getElementById("conv-input").value);
+            const from = document.getElementById("conv-from").value;
+            const to = document.getElementById("conv-to").value;
+            const out = document.getElementById("conv-result");
+            if (isNaN(val)) {
+                out.textContent = "---";
+                return;
             }
 
-            resDisplay.textContent = Math.abs(result) < 0.001 || Math.abs(result) > 10000 ? result.toExponential(4) : parseFloat(result.toFixed(4));
+            let result;
+            if (cat === "temp") {
+                const c =
+                    from === "F"
+                        ? ((val - 32) * 5) / 9
+                        : from === "K"
+                          ? val - 273.15
+                          : val;
+                result =
+                    to === "F"
+                        ? (c * 9) / 5 + 32
+                        : to === "K"
+                          ? c + 273.15
+                          : c;
+            } else {
+                const r = UNIT_DATA[cat].rates;
+                result = val * (r[from] / r[to]);
+            }
+            out.textContent =
+                Math.abs(result) < 0.001 || Math.abs(result) > 10000
+                    ? result.toExponential(4)
+                    : parseFloat(result.toFixed(4));
         }
 
-        // --- Quick Links Logic ---
-        function initQuickLinks() {
-            renderQuickLinks();
+        // ─── Web Audio Engine ─────────────────────────────────────────────────────
+        let audioCtx = null;
+        let masterGain = null;
+        let currentSoundNodes = [];
+        let ambienceMaster = null;
+        let shimmerTimer = null;
+        let birdTimer = null;
+        let rainTapTimers = [];
+        let rainDelay = null;
+        let isMasterInitialized = false;
+
+        function getCtx() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === "suspended") {
+                audioCtx.resume();
+            }
+            return audioCtx;
         }
 
-        function getQuickLinks() {
-            return JSON.parse(localStorage.getItem('wb_quick_links') || '[]');
+        function initMasterGain() {
+            if (isMasterInitialized) return;
+            const ctx = getCtx();
+            masterGain = ctx.createGain();
+            masterGain.gain.value = parseFloat(
+                document.getElementById("volume-slider").value || "0.4"
+            );
+            masterGain.connect(ctx.destination);
+            isMasterInitialized = true;
         }
 
-        function saveQuickLinks(links) {
-            localStorage.setItem('wb_quick_links', JSON.stringify(links));
+        function registerNode(node) {
+            currentSoundNodes.push(node);
+            return node;
+        }
+
+        function clearScheduledAudio() {
+            if (shimmerTimer) {
+                clearTimeout(shimmerTimer);
+                shimmerTimer = null;
+            }
+            if (birdTimer) {
+                clearTimeout(birdTimer);
+                birdTimer = null;
+            }
+            rainTapTimers.forEach((t) => clearTimeout(t));
+            rainTapTimers = [];
+        }
+
+        function disconnectAndStopNodes() {
+            currentSoundNodes.forEach((node) => {
+                try {
+                    if (typeof node.stop === "function") node.stop();
+                } catch (_) {}
+                try {
+                    node.disconnect();
+                } catch (_) {}
+            });
+            currentSoundNodes = [];
+            ambienceMaster = null;
+            rainDelay = null;
+        }
+
+        function resetAudioButtons() {
+            document.querySelectorAll(".sound-btn").forEach((b) => {
+                b.style.borderColor = "";
+                b.style.color = "";
+                b.classList.remove("text-white");
+                b.classList.add("text-text-muted");
+            });
+            document.getElementById("stop-btn").classList.add("hidden");
+            document.getElementById("volume-slider").classList.add("hidden");
+        }
+
+        function stopSound() {
+            clearScheduledAudio();
+            disconnectAndStopNodes();
+            resetAudioButtons();
+        }
+
+        function setActiveSoundButton(id) {
+            const btn = document.getElementById("btn-" + id);
+            if (btn) {
+                btn.classList.remove("text-text-muted");
+                btn.classList.add("text-white");
+                btn.style.borderColor = "#68D391";
+                btn.style.color = "#ffffff";
+            }
+            document.getElementById("stop-btn").classList.remove("hidden");
+            document.getElementById("volume-slider").classList.remove("hidden");
+        }
+
+        function createNoiseBuffer(ctx, seconds, type = "white") {
+            const length = Math.floor(ctx.sampleRate * seconds);
+            const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            if (type === "white") {
+                for (let i = 0; i < length; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+            } else if (type === "pink") {
+                let b0 = 0;
+                let b1 = 0;
+                let b2 = 0;
+                let b3 = 0;
+                let b4 = 0;
+                let b5 = 0;
+                let b6 = 0;
+                for (let i = 0; i < length; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.969 * b2 + white * 0.153852;
+                    b3 = 0.8665 * b3 + white * 0.3104856;
+                    b4 = 0.55 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.016898;
+                    data[i] =
+                        (b0 +
+                            b1 +
+                            b2 +
+                            b3 +
+                            b4 +
+                            b5 +
+                            b6 +
+                            white * 0.5362) *
+                        0.11;
+                    b6 = white * 0.115926;
+                }
+            } else if (type === "brown") {
+                let last = 0;
+                for (let i = 0; i < length; i++) {
+                    const white = Math.random() * 2 - 1;
+                    last = (last + 0.02 * white) / 1.02;
+                    data[i] = last * 3.2;
+                }
+            }
+
+            return buffer;
+        }
+
+        function createLoopingNoiseSource(ctx, buffer) {
+            const source = registerNode(ctx.createBufferSource());
+            source.buffer = buffer;
+            source.loop = true;
+            return source;
+        }
+
+        function createAmbientMaster() {
+            initMasterGain();
+            const ctx = getCtx();
+            const gain = registerNode(ctx.createGain());
+            gain.gain.value = 0.0001;
+            gain.connect(masterGain);
+            gain.gain.cancelScheduledValues(ctx.currentTime);
+            gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(
+                1,
+                ctx.currentTime + 1.2
+            );
+            ambienceMaster = gain;
+            return gain;
+        }
+
+        function scheduleCafeTink(ctx, destination) {
+            const now = ctx.currentTime;
+            const osc = registerNode(ctx.createOscillator());
+            const gain = registerNode(ctx.createGain());
+            const hp = registerNode(ctx.createBiquadFilter());
+
+            osc.type = Math.random() < 0.5 ? "sine" : "triangle";
+            osc.frequency.setValueAtTime(2200 + Math.random() * 2200, now);
+            osc.frequency.exponentialRampToValueAtTime(
+                1500 + Math.random() * 800,
+                now + 0.08
+            );
+
+            hp.type = "highpass";
+            hp.frequency.value = 1600;
+            hp.Q.value = 0.6;
+
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(
+                0.012 + Math.random() * 0.01,
+                now + 0.005
+            );
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+            osc.connect(hp);
+            hp.connect(gain);
+            gain.connect(destination);
+
+            osc.start(now);
+            osc.stop(now + 0.14);
+
+            shimmerTimer = setTimeout(
+                () => scheduleCafeTink(ctx, destination),
+                4500 + Math.random() * 9000
+            );
+        }
+
+        function scheduleForestBird(ctx, destination) {
+            const start = ctx.currentTime + 0.02;
+            const chirps = 2 + Math.floor(Math.random() * 2);
+
+            for (let i = 0; i < chirps; i++) {
+                const t = start + i * (0.08 + Math.random() * 0.05);
+                const osc = registerNode(ctx.createOscillator());
+                const gain = registerNode(ctx.createGain());
+                const hp = registerNode(ctx.createBiquadFilter());
+
+                osc.type = "sine";
+                const base = 1400 + Math.random() * 1400;
+                osc.frequency.setValueAtTime(base, t);
+                osc.frequency.exponentialRampToValueAtTime(
+                    base * (1.15 + Math.random() * 0.25),
+                    t + 0.035
+                );
+                osc.frequency.exponentialRampToValueAtTime(
+                    base * (0.85 + Math.random() * 0.1),
+                    t + 0.09
+                );
+
+                hp.type = "highpass";
+                hp.frequency.value = 900;
+                hp.Q.value = 0.5;
+
+                gain.gain.setValueAtTime(0.0001, t);
+                gain.gain.exponentialRampToValueAtTime(
+                    0.008 + Math.random() * 0.005,
+                    t + 0.01
+                );
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+
+                osc.connect(hp);
+                hp.connect(gain);
+                gain.connect(destination);
+
+                osc.start(t);
+                osc.stop(t + 0.13);
+            }
+
+            birdTimer = setTimeout(
+                () => scheduleForestBird(ctx, destination),
+                7000 + Math.random() * 14000
+            );
+        }
+
+        function scheduleRainTap(ctx, destination, delayNode) {
+            const now = ctx.currentTime + Math.random() * 0.18;
+            const noiseBuffer = createNoiseBuffer(
+                ctx,
+                0.05 + Math.random() * 0.035,
+                "white"
+            );
+            const source = createLoopingNoiseSource(ctx, noiseBuffer);
+            const bp = registerNode(ctx.createBiquadFilter());
+            const hp = registerNode(ctx.createBiquadFilter());
+            const gain = registerNode(ctx.createGain());
+
+            bp.type = "bandpass";
+            bp.frequency.value = 900 + Math.random() * 2600;
+            bp.Q.value = 5 + Math.random() * 6;
+
+            hp.type = "highpass";
+            hp.frequency.value = 500 + Math.random() * 900;
+            hp.Q.value = 0.2;
+
+            const peak = 0.0035 + Math.random() * 0.0035;
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(peak, now + 0.003);
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                now + 0.03 + Math.random() * 0.03
+            );
+
+            source.connect(bp);
+            bp.connect(hp);
+            hp.connect(gain);
+            gain.connect(destination);
+
+            if (delayNode) {
+                const send = registerNode(ctx.createGain());
+                send.gain.value = 0.18;
+                gain.connect(send);
+                send.connect(delayNode);
+            }
+
+            source.start(now);
+            source.stop(now + 0.08);
+        }
+
+        function scheduleRainCluster(ctx, destination, delayNode) {
+            const count = 4 + Math.floor(Math.random() * 8);
+            for (let i = 0; i < count; i++) {
+                scheduleRainTap(ctx, destination, delayNode);
+            }
+            const timer = setTimeout(
+                () => scheduleRainCluster(ctx, destination, delayNode),
+                120 + Math.random() * 220
+            );
+            rainTapTimers.push(timer);
+        }
+
+        function buildWhiteNoise(ctx, destination) {
+            const noise = createLoopingNoiseSource(
+                ctx,
+                createNoiseBuffer(ctx, 2.5, "white")
+            );
+            const hp = registerNode(ctx.createBiquadFilter());
+            const lp = registerNode(ctx.createBiquadFilter());
+            const gain = registerNode(ctx.createGain());
+
+            hp.type = "highpass";
+            hp.frequency.value = 120;
+
+            lp.type = "lowpass";
+            lp.frequency.value = 9500;
+            lp.Q.value = 0.2;
+
+            gain.gain.value = 0.18;
+
+            noise.connect(hp);
+            hp.connect(lp);
+            lp.connect(gain);
+            gain.connect(destination);
+
+            noise.start();
+        }
+
+        function buildCafe(ctx, destination) {
+            const room = createLoopingNoiseSource(
+                ctx,
+                createNoiseBuffer(ctx, 4, "brown")
+            );
+            const roomLP = registerNode(ctx.createBiquadFilter());
+            const roomHP = registerNode(ctx.createBiquadFilter());
+            const roomGain = registerNode(ctx.createGain());
+
+            roomHP.type = "highpass";
+            roomHP.frequency.value = 25;
+            roomLP.type = "lowpass";
+            roomLP.frequency.value = 180;
+            roomLP.Q.value = 0.3;
+            roomGain.gain.value = 0.11;
+
+            room.connect(roomHP);
+            roomHP.connect(roomLP);
+            roomLP.connect(roomGain);
+            roomGain.connect(destination);
+
+            const chatter = createLoopingNoiseSource(
+                ctx,
+                createNoiseBuffer(ctx, 4, "pink")
+            );
+            const chatterBP = registerNode(ctx.createBiquadFilter());
+            const chatterLP = registerNode(ctx.createBiquadFilter());
+            const chatterGain = registerNode(ctx.createGain());
+            const chatterLfo = registerNode(ctx.createOscillator());
+            const chatterLfoGain = registerNode(ctx.createGain());
+
+            chatterBP.type = "bandpass";
+            chatterBP.frequency.value = 950;
+            chatterBP.Q.value = 0.8;
+
+            chatterLP.type = "lowpass";
+            chatterLP.frequency.value = 2400;
+            chatterLP.Q.value = 0.3;
+
+            chatterGain.gain.value = 0.03;
+            chatterLfo.type = "sine";
+            chatterLfo.frequency.value = 0.11 + Math.random() * 0.07;
+            chatterLfoGain.gain.value = 0.018;
+
+            chatter.connect(chatterBP);
+            chatterBP.connect(chatterLP);
+            chatterLP.connect(chatterGain);
+            chatterGain.connect(destination);
+
+            chatterLfo.connect(chatterLfoGain);
+            chatterLfoGain.connect(chatterGain.gain);
+
+            chatter.start();
+            chatterLfo.start();
+            room.start();
+
+            scheduleCafeTink(ctx, destination);
+        }
+
+        function buildForest(ctx, destination) {
+            const wind = createLoopingNoiseSource(
+                ctx,
+                createNoiseBuffer(ctx, 4.5, "brown")
+            );
+            const band = registerNode(ctx.createBiquadFilter());
+            const lp = registerNode(ctx.createBiquadFilter());
+            const hp = registerNode(ctx.createBiquadFilter());
+            const gain = registerNode(ctx.createGain());
+            const lfo = registerNode(ctx.createOscillator());
+            const lfoGain = registerNode(ctx.createGain());
+
+            band.type = "bandpass";
+            band.frequency.value = 650;
+            band.Q.value = 0.7;
+
+            lp.type = "lowpass";
+            lp.frequency.value = 2400;
+
+            hp.type = "highpass";
+            hp.frequency.value = 80;
+
+            gain.gain.value = 0.1;
+
+            lfo.type = "sine";
+            lfo.frequency.value = 0.045;
+            lfoGain.gain.value = 260;
+
+            wind.connect(hp);
+            hp.connect(band);
+            band.connect(lp);
+            lp.connect(gain);
+            gain.connect(destination);
+
+            lfo.connect(lfoGain);
+            lfoGain.connect(band.frequency);
+
+            wind.start();
+            lfo.start();
+
+            scheduleForestBird(ctx, destination);
+        }
+
+        function buildRain(ctx, destination) {
+            const bed = createLoopingNoiseSource(
+                ctx,
+                createNoiseBuffer(ctx, 4, "pink")
+            );
+            const hp = registerNode(ctx.createBiquadFilter());
+            const lp = registerNode(ctx.createBiquadFilter());
+            const bedGain = registerNode(ctx.createGain());
+
+            hp.type = "highpass";
+            hp.frequency.value = 380;
+            hp.Q.value = 0.2;
+
+            lp.type = "lowpass";
+            lp.frequency.value = 4800;
+            lp.Q.value = 0.4;
+
+            bedGain.gain.value = 0.055;
+
+            bed.connect(hp);
+            hp.connect(lp);
+            lp.connect(bedGain);
+            bedGain.connect(destination);
+
+            const delay = registerNode(ctx.createDelay(0.4));
+            const delayFeedback = registerNode(ctx.createGain());
+            const delayTone = registerNode(ctx.createBiquadFilter());
+            const delayMix = registerNode(ctx.createGain());
+
+            delay.delayTime.value = 0.12;
+            delayFeedback.gain.value = 0.18;
+            delayTone.type = "lowpass";
+            delayTone.frequency.value = 2200;
+            delayMix.gain.value = 0.12;
+
+            delay.connect(delayTone);
+            delayTone.connect(delayFeedback);
+            delayFeedback.connect(delay);
+            delayTone.connect(delayMix);
+            delayMix.connect(destination);
+
+            rainDelay = delay;
+            bed.start();
+
+            scheduleRainCluster(ctx, destination, delay);
+        }
+
+        function playSound(id) {
+            stopSound();
+            const ctx = getCtx();
+            initMasterGain();
+
+            const destination = createAmbientMaster();
+
+            if (id === "whitenoise") {
+                buildWhiteNoise(ctx, destination);
+            } else if (id === "rain") {
+                buildRain(ctx, destination);
+            } else if (id === "forest") {
+                buildForest(ctx, destination);
+            } else if (id === "cafe") {
+                buildCafe(ctx, destination);
+            } else {
+                return;
+            }
+
+            setActiveSoundButton(id);
+        }
+
+        function setVolume(v) {
+            initMasterGain();
+            if (masterGain) {
+                masterGain.gain.value = parseFloat(v);
+            }
+        }
+
+        // ─── Quick Links ──────────────────────────────────────────────────────────
+        function getLinks() {
+            return JSON.parse(localStorage.getItem("wb_ql") || "[]");
+        }
+
+        function saveLinks(arr) {
+            localStorage.setItem("wb_ql", JSON.stringify(arr));
         }
 
         function renderQuickLinks() {
-            const list = document.getElementById('quick-links-list');
-            const links = getQuickLinks();
-            list.innerHTML = '';
-            
-            links.forEach((link, index) => {
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center group bg-white/5 p-1.5 rounded hover:bg-white/10 transition-colors';
-                div.innerHTML = `
-                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-accent-blue hover:underline truncate mr-2">${link.title}</a>
-                    <button onclick="deleteQuickLink(${index})" class="text-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-times text-[10px]"></i></button>
-                `;
-                list.appendChild(div);
+            const list = document.getElementById("quick-links-list");
+            const links = getLinks();
+            list.innerHTML = "";
+
+            links.forEach((link, i) => {
+                const row = document.createElement("div");
+                row.className =
+                    "flex justify-between items-center group bg-white/5 p-1.5 rounded hover:bg-white/10 transition-colors";
+
+                const a = document.createElement("a");
+                a.href = sanitizeURL(link.url);
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.className =
+                    "text-xs font-semibold text-accent-blue hover:underline truncate mr-2";
+                a.textContent = link.title;
+
+                const del = document.createElement("button");
+                del.className =
+                    "text-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity";
+                del.setAttribute("aria-label", "Delete link");
+                del.innerHTML = '<i class="fas fa-times text-[10px]"></i>';
+                del.addEventListener("click", () => deleteLink(i));
+
+                row.appendChild(a);
+                row.appendChild(del);
+                list.appendChild(row);
             });
         }
 
         function addQuickLink() {
-            const titleIn = document.getElementById('ql-title');
-            const urlIn = document.getElementById('ql-url');
-            const title = titleIn.value.trim();
-            let url = urlIn.value.trim();
-            
+            const tIn = document.getElementById("ql-title");
+            const uIn = document.getElementById("ql-url");
+            const title = tIn.value.trim().slice(0, 60);
+            let url = uIn.value.trim().slice(0, 300);
             if (!title || !url) return;
-            
-            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-            
-            const links = getQuickLinks();
-            links.push({ title, url });
-            saveQuickLinks(links);
-            renderQuickLinks();
-            
-            titleIn.value = '';
-            urlIn.value = '';
-        }
-
-        function deleteQuickLink(index) {
-            const links = getQuickLinks();
-            links.splice(index, 1);
-            saveQuickLinks(links);
-            renderQuickLinks();
-        }
-
-        // --- Relaxing Sounds ---
-        let currentSound;
-
-        function playSound(soundId) {
-            stopSound(); // Stop any currently playing sound
-            currentSound = document.getElementById(soundId);
-            currentSound.loop = true;
-            currentSound.play();
-        }
-
-        function stopSound() {
-            if (currentSound) {
-                currentSound.pause();
-                currentSound.currentTime = 0; // Reset to the beginning
-                currentSound = null;
+            if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+            const safe = sanitizeURL(url);
+            if (safe === "#") return;
+            const links = getLinks();
+            if (links.length >= MAX_LINKS) {
+                showToast("Max 20 quick links reached.");
+                return;
             }
+            links.push({ title, url: safe });
+            saveLinks(links);
+            renderQuickLinks();
+            tIn.value = "";
+            uIn.value = "";
         }
 
+        function deleteLink(i) {
+            const links = getLinks();
+            links.splice(i, 1);
+            saveLinks(links);
+            renderQuickLinks();
+        }
 
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            setInterval(updateTime, 1000); 
-            setInterval(updateUsageTracker, 60000);
+        // ─── Init ─────────────────────────────────────────────────────────────────
+        document.addEventListener("DOMContentLoaded", () => {
             updateTime();
+            setInterval(updateTime, 1000);
+
             updateUsageTracker();
-            
-            const savedNote = localStorage.getItem('wb_note');
-            if(savedNote) document.getElementById('local-note').value = savedNote;
-            document.getElementById('local-note').addEventListener('input', e => localStorage.setItem('wb_note', e.target.value));
-            
-            updateUnitOptions(); // Init converter
-            initQuickLinks(); // Init quick links
+            setInterval(updateUsageTracker, 30000);
+
+            const note = document.getElementById("local-note");
+            note.value = localStorage.getItem("wb_note") || "";
+            note.addEventListener("input", () =>
+                localStorage.setItem("wb_note", note.value)
+            );
+
+            updateUnitOptions();
+            renderQuickLinks();
+
+            document
+                .getElementById("searchForm")
+                .addEventListener("submit", handleSearch);
+
+            document.getElementById("main").classList.add("justify-center");
+            document
+                .getElementById("audio-bar")
+                .classList.add("audio-centered");
         });
+
+        document.addEventListener("click", initMasterGain, { once: true });
     </script>
 </body>
-
-
-
 </html>
