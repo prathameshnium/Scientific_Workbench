@@ -454,52 +454,71 @@
             document.querySelector('.search-input').focus();
         }
 
-        // Stopwatch / Time Tracker Logic
-        let timerInterval;
-        let seconds = 0;
-        let isRunning = false;
+        // Pomodoro Timer Logic
+        let pomoInterval;
+        let pomoSecondsLeft = 1500; // Default 25m
+        let pomoDuration = 1500;
+        let pomoRunning = false;
 
-        function toggleTimer() {
-            const btn = document.getElementById('timer-btn');
+        function setPomoMode(minutes) {
+            pomoDuration = minutes * 60;
+            resetPomodoro();
+        }
+
+        function togglePomodoro() {
+            const btn = document.getElementById('pomo-btn');
             
-            if (isRunning) {
-                clearInterval(timerInterval);
-                btn.textContent = "Start";
+            if (pomoRunning) {
+                clearInterval(pomoInterval);
+                btn.textContent = "Resume";
                 btn.classList.remove('bg-red-500');
                 btn.classList.add('bg-gray-700');
-                isRunning = false;
+                pomoRunning = false;
             } else {
-                timerInterval = setInterval(updateStopwatch, 1000);
+                if (pomoSecondsLeft <= 0) return;
+                
+                pomoInterval = setInterval(() => {
+                    if (pomoSecondsLeft > 0) {
+                        pomoSecondsLeft--;
+                        updatePomoDisplay();
+                    } else {
+                        clearInterval(pomoInterval);
+                        pomoRunning = false;
+                        btn.textContent = "Start";
+                        btn.classList.remove('bg-red-500');
+                        btn.classList.add('bg-gray-700');
+                        // Timer finished
+                    }
+                }, 1000);
+                
                 btn.textContent = "Pause";
                 btn.classList.remove('bg-gray-700');
-                btn.classList.add('bg-red-500'); // Visual cue for running state
-                isRunning = true;
+                btn.classList.add('bg-red-500');
+                pomoRunning = true;
             }
         }
 
-        function resetTimer() {
-            clearInterval(timerInterval);
-            seconds = 0;
-            isRunning = false;
-            document.getElementById('stopwatch').textContent = "00:00:00";
-            const btn = document.getElementById('timer-btn');
+        function resetPomodoro() {
+            clearInterval(pomoInterval);
+            pomoRunning = false;
+            pomoSecondsLeft = pomoDuration;
+            updatePomoDisplay();
+            
+            const btn = document.getElementById('pomo-btn');
             btn.textContent = "Start";
             btn.classList.remove('bg-red-500');
             btn.classList.add('bg-gray-700');
         }
 
-        function updateStopwatch() {
-            seconds++;
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
+        function updatePomoDisplay() {
+            const m = Math.floor(pomoSecondsLeft / 60);
+            const s = pomoSecondsLeft % 60;
             
             const display = 
-                (h < 10 ? "0" + h : h) + ":" + 
                 (m < 10 ? "0" + m : m) + ":" + 
                 (s < 10 ? "0" + s : s);
             
-            document.getElementById('stopwatch').textContent = display;
+            document.getElementById('pomodoro-display').textContent = display;
         }
     </script>
 </body>
