@@ -306,6 +306,15 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Quick Notes (Local) -->
+                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-orange transition-all duration-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-accent-orange">Scratchpad</span>
+                            <i class="fas fa-pen-fancy text-gray-500"></i>
+                        </div>
+                        <textarea id="local-note" class="w-full h-32 bg-dark-bg border border-border-color rounded p-2 text-xs text-text-main resize-none focus:border-accent-orange focus:outline-none font-mono placeholder-gray-600" placeholder="Local notes (auto-saved)..."></textarea>
+                    </div>
                     
                     <a href="https://todoist.com/app" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
                         <div class="flex items-center justify-between">
@@ -470,6 +479,18 @@
                 : parseFloat(result.toFixed(4));
         }
 
+        // Local Scratchpad Logic
+        function initScratchpad() {
+            const noteArea = document.getElementById('local-note');
+            if (noteArea) {
+                const saved = localStorage.getItem('workbench_scratchpad');
+                if (saved) noteArea.value = saved;
+                noteArea.addEventListener('input', (e) => {
+                    localStorage.setItem('workbench_scratchpad', e.target.value);
+                });
+            }
+        }
+
         // Clock Functionality
         function updateTime() {
             const now = new Date();
@@ -488,6 +509,7 @@
         // Initialize all functions
         document.addEventListener('DOMContentLoaded', () => {
             initConverter();
+            initScratchpad();
             setInterval(updateTime, 1000);
             updateTime();
         });
