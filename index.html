@@ -8,47 +8,25 @@
     <meta name="description" content="Secure, privacy-focused scientific workbench.">
     <meta name="author" content="Prathamesh Deshmukh">
     
-    <!-- Security: Content Security Policy 
-         Restricts resources to trusted CDNs only (Tailwind/FontAwesome).
-         Removed Google Fonts domain to prevent IP tracking. -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' https: data:;">
-    
-    <!-- Privacy: Strict Referrer Policy
-         Ensures external sites see 'Referrer: null' instead of your file path. -->
     <meta name="referrer" content="no-referrer">
     
-    <!-- Favicon -->
     <link rel="icon" href="https://github.com/prathameshnium.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- FontAwesome (Icons) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        // Using System Fonts stack for maximum privacy and speed
-                        'sans': ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-                        'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                        'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
                     },
                     colors: {
-                        'dark-bg': '#0f111a',       
-                        'card-bg': '#1a1d2d',       
-                        'card-hover': '#24283b',
-                        'accent-orange': '#F6AD55', 
-                        'accent-blue': '#63B3ED',   
-                        'accent-green': '#68D391',
-                        'text-main': '#E2E8F0',
-                        'text-muted': '#94A3B8',
-                        'border-color': '#2d3748'
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'dark-bg': '#0f111a', 'card-bg': '#1a1d2d', 'card-hover': '#24283b',
+                        'accent-orange': '#F6AD55', 'accent-blue': '#63B3ED', 'accent-green': '#68D391',
+                        'text-main': '#E2E8F0', 'text-muted': '#94A3B8', 'border-color': '#2d3748'
                     }
                 }
             }
@@ -56,555 +34,203 @@
     </script>
 
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f111a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2d3748;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4a5568;
-        }
-        
-        /* Glassmorphism utilities */
-        .glass-panel {
-            background: rgba(26, 29, 45, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Search Input Focus Reset */
-        .search-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px #F6AD55;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f111a; }
+        ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
+        .glass-panel { background: rgba(26, 29, 45, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .search-input:focus { outline: none; box-shadow: 0 0 0 2px #F6AD55; }
     </style>
 </head>
 
 <body class="antialiased font-sans bg-dark-bg text-text-main h-screen flex flex-col overflow-hidden">
 
-    <!-- Main Content Wrapper -->
     <div class="flex flex-col h-full">
-        
-        <!-- Top Navigation / Status Bar -->
         <nav class="glass-panel border-b border-border-color z-50">
             <div class="container mx-auto px-6 h-14 flex justify-between items-center">
-                <!-- Brand / Name -->
                 <div class="flex items-center gap-3">
                     <img src="https://github.com/prathameshnium.png" alt="Profile" class="w-8 h-8 rounded-full border border-accent-orange">
                     <span class="font-bold text-lg tracking-tight">Scientific<span class="text-accent-orange">.Workbench</span></span>
                 </div>
-
-                <!-- Real-time Clock -->
-                <div class="font-mono text-accent-blue text-lg font-semibold tracking-wider" id="clock">
-                    00:00:00
-                </div>
-
-                <!-- Quick Date -->
-                <div class="hidden md:block text-sm text-text-muted" id="date">
-                    Loading date...
-                </div>
+                <div class="font-mono text-accent-blue text-lg font-semibold tracking-wider" id="clock">00:00:00</div>
+                <div class="hidden md:block text-sm text-text-muted" id="date">Loading...</div>
             </div>
         </nav>
 
-        <!-- Main Content Area -->
         <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto">
             
-            <!-- Search Section -->
             <div class="max-w-3xl mx-auto mb-12 mt-4">
-                <!-- target="_blank" to prevent tab-nabbing and keep workbench open -->
                 <form action="https://www.google.com/search" method="GET" id="searchForm" class="relative group" target="_blank" rel="noopener">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="fas fa-search text-text-muted group-focus-within:text-accent-orange transition-colors"></i>
                     </div>
                     <input type="text" name="q" class="search-input w-full bg-card-bg text-white border border-border-color rounded-xl py-4 pl-12 pr-40 shadow-lg placeholder-gray-500 transition-all duration-300 focus:bg-gray-800" placeholder="Search the cosmos..." autofocus autocomplete="off">
                     
-                    <!-- Search Engine Toggles -->
                     <div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
-                        <button type="button" onclick="setEngine('google')" class="p-2 text-gray-400 hover:text-white transition-colors" title="Google">
-                            <i class="fab fa-google"></i>
-                        </button>
-                        <button type="button" onclick="setEngine('brave')" class="p-2 text-gray-400 hover:text-accent-orange transition-colors" title="Brave Search">
-                            <i class="fas fa-lion"></i>
-                        </button>
-                        <button type="button" onclick="setEngine('duckduckgo')" class="p-2 text-gray-400 hover:text-white transition-colors" title="DuckDuckGo">
-                            <img src="https://duckduckgo.com/favicon.ico" class="w-4 h-4 filter grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" alt="DDG">
-                        </button>
-                        <button type="button" onclick="setEngine('startpage')" class="p-2 text-gray-400 hover:text-white transition-colors" title="Startpage">
-                            <span class="font-bold text-xs">SP</span>
-                        </button>
-                        <button type="button" onclick="setEngine('scholar')" class="p-2 text-gray-400 hover:text-white transition-colors" title="Google Scholar">
-                            <i class="fas fa-graduation-cap"></i>
-                        </button>
+                        <button type="button" onclick="setEngine('google')" class="p-2 text-gray-400 hover:text-white" title="Google"><i class="fab fa-google"></i></button>
+                        <button type="button" onclick="setEngine('brave')" class="p-2 text-gray-400 hover:text-accent-orange" title="Brave"><i class="fas fa-lion"></i></button>
+                        <button type="button" onclick="setEngine('scholar')" class="p-2 text-gray-400 hover:text-white" title="Scholar"><i class="fas fa-graduation-cap"></i></button>
                     </div>
                 </form>
                 <div class="text-center mt-2 text-xs text-gray-600 font-mono" id="search-label">Searching: Google</div>
             </div>
 
-            <!-- Dashboard Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-
-                <!-- Column 1: Research & Literature -->
+                
                 <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">
-                        <i class="fas fa-book-reader mr-2"></i>Research
-                    </h3>
-                    
-                    <a href="https://scholar.google.com" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Google Scholar</span>
-                            <i class="fas fa-graduation-cap text-gray-500 group-hover:text-white"></i>
-                        </div>
+                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Research</h3>
+                    <a href="https://scholar.google.com" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
+                        <span class="font-semibold block">Google Scholar</span>
                         <p class="text-xs text-text-muted mt-1">Literature search</p>
                     </a>
-
-                    <a href="https://arxiv.org/list/cond-mat/recent" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">arXiv:cond-mat</span>
-                            <i class="fas fa-atom text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Preprints & latest papers</p>
-                    </a>
-                    
-                    <a href="https://shodhganga.inflibnet.ac.in/" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Shodhganga</span>
-                            <i class="fas fa-scroll text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Indian Theses Repository</p>
-                    </a>
-
-                    <a href="https://www.overleaf.com/project" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Overleaf</span>
-                            <i class="fas fa-file-alt text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">LaTeX Editor</p>
-                    </a>
-
-                    <a href="https://notebooklm.google.com/" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">NotebookLM</span>
-                            <i class="fas fa-brain text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">AI Research Assistant</p>
+                    <a href="https://arxiv.org/" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
+                        <span class="font-semibold block">arXiv</span>
+                        <p class="text-xs text-text-muted mt-1">Latest Preprints</p>
                     </a>
                 </div>
 
-                <!-- Column 2: Development & Code -->
                 <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">
-                        <i class="fas fa-code mr-2"></i>Development
-                    </h3>
-                    
-                    <a href="https://github.com/prathameshnium" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">GitHub</span>
-                            <i class="fab fa-github text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Code repositories</p>
+                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Code</h3>
+                    <a href="https://github.com/prathameshnium" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
+                        <span class="font-semibold block">GitHub</span>
+                        <p class="text-xs text-text-muted mt-1">Repositories</p>
                     </a>
-
-                    <a href="https://prathameshnium.github.io/Kusanagi-AI/" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-accent-orange/30 hover:border-accent-orange hover:bg-card-hover transition-all duration-200 group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-2 h-2 bg-accent-orange rounded-bl-full"></div>
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold text-accent-orange group-hover:text-white transition-colors">Kusanagi-AI</span>
-                            <i class="fas fa-robot text-accent-orange/70 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Local AI Workbench</p>
-                    </a>
-
-                    <a href="https://colab.research.google.com/" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Google Colab</span>
-                            <i class="fab fa-python text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Cloud Jupyter Notebooks</p>
+                    <a href="https://colab.research.google.com/" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
+                        <span class="font-semibold block">Google Colab</span>
+                        <p class="text-xs text-text-muted mt-1">Python Notebooks</p>
                     </a>
                 </div>
 
-                <!-- Column 3: Intelligence & Tools -->
                 <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">
-                        <i class="fas fa-microchip mr-2"></i>Intelligence
-                    </h3>
-
-                    <!-- Unit Converter -->
-                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all duration-200">
+                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Intelligence</h3>
+                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-accent-blue">Unit Converter</span>
+                            <span class="font-semibold text-accent-blue text-sm">Unit Converter</span>
                             <i class="fas fa-exchange-alt text-gray-500"></i>
                         </div>
-                        <div class="space-y-2">
-                            <input type="number" id="conv-input" placeholder="Value" class="w-full bg-dark-bg border border-border-color rounded px-2 py-1 text-sm text-white focus:border-accent-blue focus:outline-none font-mono" oninput="convertUnits()">
-                            <div class="flex gap-1">
-                                <select id="conv-from" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
-                                <select id="conv-to" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
-                            </div>
-                            <div id="conv-result" class="text-center font-mono text-sm text-accent-orange min-h-[1.5rem] flex items-center justify-center">---</div>
+                        <select id="conv-category" class="w-full bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white mb-2 focus:outline-none" onchange="updateUnitOptions()">
+                            <option value="length">Length</option>
+                            <option value="weight">Mass</option>
+                            <option value="temp">Temperature</option>
+                            <option value="data">Digital Data</option>
+                        </select>
+                        <input type="number" id="conv-input" placeholder="Value" class="w-full bg-dark-bg border border-border-color rounded px-2 py-1 text-sm text-white mb-2 font-mono" oninput="convertUnits()">
+                        <div class="flex gap-1 mb-2">
+                            <select id="conv-from" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white" onchange="convertUnits()"></select>
+                            <select id="conv-to" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white" onchange="convertUnits()"></select>
                         </div>
+                        <div id="conv-result" class="text-center font-mono text-sm text-accent-orange bg-dark-bg/50 py-1 rounded">---</div>
                     </div>
-                    
-                    <a href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Gemini Advanced</span>
-                            <i class="fas fa-sparkles text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Multimodal AI Model</p>
-                    </a>
-
-                    <a href="https://chat.openai.com/" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">ChatGPT</span>
-                            <i class="fas fa-comment-alt text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">LLM Chat Interface</p>
-                    </a>
-
-                    <a href="https://www.wolframalpha.com/" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">WolframAlpha</span>
-                            <i class="fas fa-square-root-alt text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Computational Knowledge</p>
-                    </a>
-
-                    <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Desmos</span>
-                            <i class="fas fa-chart-line text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Graphing Calculator</p>
-                    </a>
                 </div>
 
-                <!-- Column 4: Productivity & Utility -->
                 <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">
-                        <i class="fas fa-tasks mr-2"></i>Productivity
-                    </h3>
-
-                    <!-- Time Tracker Card -->
-                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-green transition-all duration-200">
+                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Productivity</h3>
+                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-accent-green">Session Timer</span>
+                            <span class="font-semibold text-accent-green text-sm">Pomodoro</span>
                             <i class="fas fa-stopwatch text-gray-500"></i>
                         </div>
-                        <div class="text-center font-mono text-2xl tracking-widest my-3 text-white" id="stopwatch">00:00:00</div>
-                        <div class="flex justify-center gap-3">
-                            <button onclick="toggleTimer()" id="timer-btn" class="bg-gray-700 hover:bg-accent-green hover:text-black text-white text-xs font-bold py-1 px-3 rounded transition-colors">
-                                Start
-                            </button>
-                            <button onclick="resetTimer()" class="bg-gray-700 hover:bg-red-500 hover:text-white text-white text-xs font-bold py-1 px-3 rounded transition-colors">
-                                Reset
-                            </button>
+                        <div class="text-center font-mono text-2xl tracking-widest my-3 text-white" id="pomodoro-display">25:00</div>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="toggleTimer()" id="pomo-btn" class="bg-gray-700 hover:bg-accent-green hover:text-black text-[10px] font-bold py-1 px-3 rounded transition-colors uppercase">Start</button>
+                            <button onclick="resetPomodoro()" class="bg-gray-700 hover:bg-red-500 text-[10px] font-bold py-1 px-3 rounded transition-colors uppercase">Reset</button>
                         </div>
                     </div>
-
-                    <!-- Quick Notes (Local) -->
-                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-orange transition-all duration-200">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-accent-orange">Scratchpad</span>
-                            <i class="fas fa-pen-fancy text-gray-500"></i>
-                        </div>
-                        <textarea id="local-note" class="w-full h-32 bg-dark-bg border border-border-color rounded p-2 text-xs text-text-main resize-none focus:border-accent-orange focus:outline-none font-mono placeholder-gray-600" placeholder="Local notes (auto-saved)..."></textarea>
+                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
+                        <textarea id="local-note" class="w-full h-24 bg-dark-bg border border-border-color rounded p-2 text-xs text-text-main resize-none focus:outline-none font-mono" placeholder="Scratchpad..."></textarea>
                     </div>
-                    
-                    <a href="https://todoist.com/app" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Todoist</span>
-                            <i class="fas fa-check-circle text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Task Management</p>
-                    </a>
-
-                    <a href="https://keep.google.com/" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">Google Keep</span>
-                            <i class="fas fa-sticky-note text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Quick Notes</p>
-                    </a>
-
-                    <a href="https://www.youtube.com/feed/subscriptions" target="_blank" rel="noopener noreferrer" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue hover:bg-card-hover transition-all duration-200 group">
-                        <div class="flex items-center justify-between">
-                            <span class="font-semibold group-hover:text-accent-blue transition-colors">YouTube</span>
-                            <i class="fab fa-youtube text-gray-500 group-hover:text-white"></i>
-                        </div>
-                        <p class="text-xs text-text-muted mt-1">Learning & Subs</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Search Engines List (Bottom) -->
-            <div class="mt-16 text-center border-t border-border-color pt-8 max-w-5xl mx-auto">
-                <h4 class="text-sm text-text-muted font-mono mb-4">SEARCH ENGINES & INDEXES</h4>
-                <div class="flex flex-wrap justify-center gap-4 text-sm">
-                    <a href="https://search.brave.com" class="text-gray-400 hover:text-accent-orange transition-colors">Brave</a>
-                    <span class="text-gray-700">|</span>
-                    <a href="https://duckduckgo.com" class="text-gray-400 hover:text-accent-orange transition-colors">DuckDuckGo</a>
-                    <span class="text-gray-700">|</span>
-                    <a href="https://www.google.com" class="text-gray-400 hover:text-accent-orange transition-colors">Google</a>
-                    <span class="text-gray-700">|</span>
-                    <a href="https://www.startpage.com" class="text-gray-400 hover:text-accent-orange transition-colors">Startpage</a>
-                    <span class="text-gray-700">|</span>
-                    <a href="https://scholar.google.com" class="text-gray-400 hover:text-accent-orange transition-colors">Google Scholar</a>
-                    <span class="text-gray-700">|</span>
-                    <a href="https://www.semanticscholar.org/" class="text-gray-400 hover:text-accent-orange transition-colors">Semantic Scholar</a>
                 </div>
             </div>
         </main>
 
-        <!-- Footer -->
         <footer class="glass-panel border-t border-border-color py-4">
-            <div class="container mx-auto px-6 text-center md:text-right text-xs text-gray-600 font-mono">
-                <span id="footer-year"></span> &copy; Prathamesh Deshmukh | <a href="https://prathameshnium.github.io" class="hover:text-accent-orange">Portfolio</a> | <a href="https://github.com/prathameshnium/Kusanagi-AI" class="hover:text-accent-orange">Kusanagi-AI</a>
+            <div class="container mx-auto px-6 text-right text-[10px] text-gray-600 font-mono">
+                <span id="footer-year"></span> &copy; Prathamesh Deshmukh | Scientific Workbench v2.0
             </div>
         </footer>
-    </div> <!-- End Main Content Wrapper -->
+    </div>
 
-    <!-- JavaScript -->
     <script>
-        // --- Calculator Logic ---
-        function calcAppend(val) {
-            document.getElementById('calc-display').value += val;
-        }
-        function calcClear() {
-            document.getElementById('calc-display').value = '';
-        }
-        function calcSolve() {
-            try {
-                const val = document.getElementById('calc-display').value;
-                // Allow digits, operators, decimal, space
-                if (/^[0-9+\-*/. ]+$/.test(val)) {
-                    document.getElementById('calc-display').value = eval(val);
-                }
-            } catch (e) {
-                document.getElementById('calc-display').value = 'Error';
-            }
-        }
-
-        // --- Enhanced Unit Converter Logic ---
+        // --- Unit Converter Logic ---
         const units = {
-            temp: {
-                name: 'Temperature',
-                types: ['C', 'F', 'K'],
-                toBase: (val, type) => {
-                    if (type === 'C') return val;
-                    if (type === 'F') return (val - 32) * 5/9;
-                    if (type === 'K') return val - 273.15;
-                    return val;
-                },
-                fromBase: (val, type) => {
-                    if (type === 'C') return val;
-                    if (type === 'F') return (val * 9/5) + 32;
-                    if (type === 'K') return val + 273.15;
-                    return val;
-                }
-            },
-            length: {
-                name: 'Length',
-                rates: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 }
-            },
-            weight: {
-                name: 'Mass',
-                rates: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495 }
-            },
-            data: {
-                name: 'Digital',
-                rates: { B: 1, KB: 1024, MB: 1024**2, GB: 1024**3, TB: 1024**4 }
-            }
+            temp: { types: ['C', 'F', 'K'], 
+                toBase: (v, t) => t==='C'?v : t==='F'?(v-32)*5/9 : v-273.15,
+                fromBase: (v, t) => t==='C'?v : t==='F'?(v*9/5)+32 : v+273.15 },
+            length: { rates: { m:1, km:1000, cm:0.01, mm:0.001, mi:1609.34, ft:0.3048, in:0.0254 } },
+            weight: { rates: { kg:1, g:0.001, mg:0.000001, lb:0.453592, oz:0.0283495 } },
+            data: { rates: { B:1, KB:1024, MB:1024**2, GB:1024**3, TB:1024**4 } }
         };
-
-        function initConverter() {
-            updateUnitOptions();
-        }
 
         function updateUnitOptions() {
             const cat = document.getElementById('conv-category').value;
-            const fromSel = document.getElementById('conv-from');
-            const toSel = document.getElementById('conv-to');
-            
-            fromSel.innerHTML = '';
-            toSel.innerHTML = '';
-
-            const data = units[cat];
-            let options = [];
-            
-            if (data.types) options = data.types;
-            else if (data.rates) options = Object.keys(data.rates);
-
+            const fromSel = document.getElementById('conv-from'), toSel = document.getElementById('conv-to');
+            fromSel.innerHTML = ''; toSel.innerHTML = '';
+            const options = units[cat].types || Object.keys(units[cat].rates);
             options.forEach(opt => {
                 fromSel.add(new Option(opt, opt));
                 toSel.add(new Option(opt, opt));
             });
-            
-            if (options.length > 1) {
-                fromSel.selectedIndex = 0;
-                toSel.selectedIndex = 1;
-            }
+            toSel.selectedIndex = 1;
             convertUnits();
         }
 
         function convertUnits() {
             const val = parseFloat(document.getElementById('conv-input').value);
-            if (isNaN(val)) {
-                document.getElementById('conv-result').textContent = "---";
-                return;
-            }
-            
-            const cat = document.getElementById('conv-category').value;
-            const from = document.getElementById('conv-from').value;
-            const to = document.getElementById('conv-to').value;
-            let result;
-
-            if (cat === 'temp') {
-                const base = units.temp.toBase(val, from);
-                result = units.temp.fromBase(base, to);
-            } else {
-                const rates = units[cat].rates;
-                const base = val * rates[from];
-                result = base / rates[to];
-            }
-            
-            document.getElementById('conv-result').textContent = 
-                Math.abs(result) < 0.01 || Math.abs(result) > 10000 
-                ? result.toExponential(3) 
-                : parseFloat(result.toFixed(4));
+            if (isNaN(val)) { document.getElementById('conv-result').textContent = "---"; return; }
+            const cat = document.getElementById('conv-category').value, from = document.getElementById('conv-from').value, to = document.getElementById('conv-to').value;
+            let res = cat === 'temp' ? units.temp.fromBase(units.temp.toBase(val, from), to) : (val * units[cat].rates[from]) / units[cat].rates[to];
+            document.getElementById('conv-result').textContent = res.toLocaleString(undefined, {maximumFractionDigits: 4});
         }
 
-        // Local Scratchpad Logic
-        function initScratchpad() {
-            const noteArea = document.getElementById('local-note');
-            if (noteArea) {
-                const saved = localStorage.getItem('workbench_scratchpad');
-                if (saved) noteArea.value = saved;
-                noteArea.addEventListener('input', (e) => {
-                    localStorage.setItem('workbench_scratchpad', e.target.value);
-                });
-            }
-        }
-
-        // Clock Functionality
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
-            const dateString = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            
-            const clockEl = document.getElementById('clock');
-            const dateEl = document.getElementById('date');
-            const footerYearEl = document.getElementById('footer-year');
-
-            if (clockEl) clockEl.textContent = timeString;
-            if (dateEl) dateEl.textContent = dateString;
-            if (footerYearEl) footerYearEl.textContent = now.getFullYear();
-        }
-        
-        // Initialize all functions
-        document.addEventListener('DOMContentLoaded', () => {
-            initConverter();
-            initScratchpad();
-            setInterval(updateTime, 1000);
-            updateTime();
-        });
-
-        // Search Engine Switcher
-        function setEngine(engine) {
-            const form = document.getElementById('searchForm');
-            const label = document.getElementById('search-label');
-            
-            if (engine === 'google') {
-                form.action = "https://www.google.com/search";
-                label.textContent = "Searching: Google";
-            } else if (engine === 'duckduckgo') {
-                form.action = "https://duckduckgo.com/";
-                label.textContent = "Searching: DuckDuckGo";
-            } else if (engine === 'startpage') {
-                form.action = "https://www.startpage.com/sp/search";
-                label.textContent = "Searching: Startpage";
-            } else if (engine === 'scholar') {
-                form.action = "https://scholar.google.com/scholar";
-                label.textContent = "Searching: Google Scholar";
-            } else if (engine === 'brave') {
-                form.action = "https://search.brave.com/search";
-                label.textContent = "Searching: Brave";
-            }
-            
-            document.querySelector('.search-input').focus();
-        }
-
-        // Pomodoro Timer Logic
-        let pomoInterval;
-        let pomoSecondsLeft = 1500; // Default 25m
-        let pomoDuration = 1500;
-        let pomoRunning = false;
-
-        function setPomoMode(minutes) {
-            pomoDuration = minutes * 60;
-            resetPomodoro();
-        }
-
-        function togglePomodoro() {
+        // --- Timer Logic ---
+        let pomoInterval, pomoSecondsLeft = 1500, pomoRunning = false;
+        function toggleTimer() {
             const btn = document.getElementById('pomo-btn');
-            
             if (pomoRunning) {
                 clearInterval(pomoInterval);
                 btn.textContent = "Resume";
-                btn.classList.remove('bg-red-500');
-                btn.classList.add('bg-gray-700');
                 pomoRunning = false;
             } else {
-                if (pomoSecondsLeft <= 0) return;
-                
                 pomoInterval = setInterval(() => {
-                    if (pomoSecondsLeft > 0) {
-                        pomoSecondsLeft--;
-                        updatePomoDisplay();
-                    } else {
-                        clearInterval(pomoInterval);
-                        pomoRunning = false;
-                        btn.textContent = "Start";
-                        btn.classList.remove('bg-red-500');
-                        btn.classList.add('bg-gray-700');
-                        // Timer finished
-                    }
+                    if (pomoSecondsLeft > 0) { pomoSecondsLeft--; updatePomoDisplay(); }
+                    else { clearInterval(pomoInterval); alert("Session Finished!"); resetPomodoro(); }
                 }, 1000);
-                
                 btn.textContent = "Pause";
-                btn.classList.remove('bg-gray-700');
-                btn.classList.add('bg-red-500');
                 pomoRunning = true;
             }
         }
-
         function resetPomodoro() {
             clearInterval(pomoInterval);
-            pomoRunning = false;
-            pomoSecondsLeft = pomoDuration;
+            pomoSecondsLeft = 1500; pomoRunning = false;
+            document.getElementById('pomo-btn').textContent = "Start";
             updatePomoDisplay();
-            
-            const btn = document.getElementById('pomo-btn');
-            btn.textContent = "Start";
-            btn.classList.remove('bg-red-500');
-            btn.classList.add('bg-gray-700');
+        }
+        function updatePomoDisplay() {
+            const m = Math.floor(pomoSecondsLeft / 60), s = pomoSecondsLeft % 60;
+            document.getElementById('pomodoro-display').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        function updatePomoDisplay() {
-            const m = Math.floor(pomoSecondsLeft / 60);
-            const s = pomoSecondsLeft % 60;
-            
-            const display = 
-                (m < 10 ? "0" + m : m) + ":" + 
-                (s < 10 ? "0" + s : s);
-            
-            document.getElementById('pomodoro-display').textContent = display;
+        // --- Core Utilities ---
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB');
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday:'short', day:'numeric', month:'short' });
+            document.getElementById('footer-year').textContent = now.getFullYear();
         }
+
+        function setEngine(engine) {
+            const form = document.getElementById('searchForm'), label = document.getElementById('search-label');
+            const engines = { google: "https://www.google.com/search", brave: "https://search.brave.com/search", scholar: "https://scholar.google.com/scholar" };
+            form.action = engines[engine];
+            label.textContent = `Searching: ${engine.charAt(0).toUpperCase() + engine.slice(1)}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUnitOptions();
+            setInterval(updateTime, 1000); updateTime();
+            const savedNote = localStorage.getItem('wb_note');
+            if(savedNote) document.getElementById('local-note').value = savedNote;
+            document.getElementById('local-note').addEventListener('input', e => localStorage.setItem('wb_note', e.target.value));
+        });
     </script>
 </body>
 </html>
