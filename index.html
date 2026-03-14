@@ -18,7 +18,7 @@
                         'dark-bg': '#0f111a', 'card-bg': 'rgba(26, 29, 45, 0.85)',
                         'accent-orange': '#F6AD55', 'accent-blue': '#63B3ED', 'accent-green': '#68D391',
                         'text-main': '#E2E8F0', 'text-muted': '#94A3B8', 'border-color': 'rgba(255, 255, 255, 0.1)',
-                        'usage-track': '#1f101a', 'usage-fill': '#831843'
+                        'usage-track': 'rgba(255, 255, 255, 0.05)', 'usage-fill': '#F6AD55'
                     }
                 }
             }
@@ -96,23 +96,7 @@
             <div class="space-y-4">
                 <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Intelligence</h3>
                 
-                <div class="custom-card bg-[#0a0a0a] border border-white/5 p-4 rounded-xl">
-                    <div class="flex justify-between items-center mb-6">
-                        <span class="font-bold text-white tracking-wide">Usage Limits</span>
-                        <i class="far fa-info-circle text-text-muted cursor-pointer hover:text-white transition-colors" onclick="resetUsageTimer()" title="Reset 4h cycle"></i>
-                    </div>
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-white text-sm">Base</span>
-                        <div class="text-text-muted text-sm flex items-center gap-1.5 font-medium">
-                            <i class="far fa-clock"></i><span id="usage-time-left">-- minutes</span>
-                        </div>
-                    </div>
-                    <div class="w-full bg-usage-track rounded-full h-2.5 overflow-hidden border border-white/5">
-                        <div id="usage-progress-bar" class="bg-usage-fill h-full transition-all duration-1000 rounded-full" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <a href="https://prathameshnium.github.io/Kusanagi-AI/" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg border-l-4 border-l-accent-orange">
+                <a href="https://prathameshnium.github.io/Kusanagi-AI/" target="_blank" rel="noopener noreferrer" class="custom-card block bg-card-bg p-3 rounded-lg">
                     <span class="font-semibold text-sm block">Kusanagi AI</span>
                     <p class="text-[10px] text-text-muted">Local Neural Interface</p>
                 </a>
@@ -132,6 +116,26 @@
                     <span class="font-semibold text-sm block">arXiv Physics</span>
                     <p class="text-[10px] text-text-muted">New Preprints</p>
                 </a>
+
+                <!-- Unit Converter -->
+                <div class="custom-card bg-card-bg p-4 rounded-xl">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-bold text-white tracking-wide text-xs uppercase">Unit Converter</span>
+                        <i class="fas fa-exchange-alt text-accent-blue text-xs"></i>
+                    </div>
+                    <select id="conv-category" class="w-full bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-text-muted focus:border-accent-blue focus:outline-none mb-2" onchange="updateUnitOptions()">
+                        <option value="prefix">Metric Prefixes (Mega, Micro...)</option>
+                        <option value="length">Length (m, ft, mi...)</option>
+                        <option value="mass">Mass (kg, lb, oz...)</option>
+                        <option value="temp">Temperature (C, F, K)</option>
+                    </select>
+                    <div class="flex gap-1 mb-2">
+                        <input type="number" id="conv-input" placeholder="Val" class="w-1/3 bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" oninput="convertUnits()">
+                        <select id="conv-from" class="w-1/3 bg-dark-bg border border-white/10 rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
+                        <select id="conv-to" class="w-1/3 bg-dark-bg border border-white/10 rounded px-1 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onchange="convertUnits()"></select>
+                    </div>
+                    <div id="conv-result" class="text-right font-mono text-sm text-accent-orange font-bold">---</div>
+                </div>
             </div>
 
             <div class="space-y-4">
@@ -155,6 +159,21 @@
             <div class="space-y-4">
                 <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Workspace</h3>
                 
+                <div class="custom-card bg-card-bg p-4 rounded-xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="font-bold text-white tracking-wide">Limit</span>
+                    </div>
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-white text-sm">Energy</span>
+                        <div class="text-text-muted text-sm flex items-center gap-1.5 font-medium">
+                            <i class="far fa-clock"></i><span id="usage-time-left">-- minutes</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-usage-track rounded-full h-2.5 overflow-hidden border border-white/5">
+                        <div id="usage-progress-bar" class="bg-usage-fill h-full transition-all duration-1000 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
                 <div class="custom-card bg-card-bg p-4 rounded-xl text-center">
                     <div class="text-3xl font-mono text-white mb-3 tracking-widest" id="pomodoro-display">25:00</div>
                     <div class="flex w-full gap-2">
@@ -210,37 +229,30 @@
 
         // --- Usage Tracker Logic ---
         function updateUsageTracker() {
-            const totalSeconds = 4 * 3600; // 4 hours
-            let targetTime = localStorage.getItem('wb_usage_target');
-            const now = new Date().getTime();
-
-            if (!targetTime) {
-                targetTime = now + (54 * 60 * 1000); // Default to user's 54 min scenario initially
-                localStorage.setItem('wb_usage_target', targetTime);
-            }
-
-            const diffSeconds = Math.max(0, Math.floor((targetTime - now) / 1000));
+            const now = new Date();
+            const cycleDuration = 4 * 60 * 60 * 1000; // 4 hours in ms
             
-            if (diffSeconds === 0) {
-                document.getElementById('usage-time-left').textContent = "Refilled";
-                document.getElementById('usage-progress-bar').style.width = "100%";
-                return;
-            }
+            // Calculate time elapsed since midnight
+            const msSinceMidnight = (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) * 1000 + now.getMilliseconds();
+            
+            // Calculate time remaining in current 4-hour cycle
+            const msInCurrentCycle = msSinceMidnight % cycleDuration;
+            const msRemaining = cycleDuration - msInCurrentCycle;
+            const diffSeconds = Math.floor(msRemaining / 1000);
 
             const h = Math.floor(diffSeconds / 3600);
             const m = Math.floor((diffSeconds % 3600) / 60);
             
             let timeText = h > 0 ? `${h}h ${m}m` : `${m} minutes`;
+            
+            // Invert percentage: 0 time left = 0% bar (or 100% used)
+            // Standard logic: Show how much capacity is LEFT. 
+            // At start of cycle (4h left) -> 100% bar. At end (0m left) -> 0% bar.
+            const totalSeconds = 4 * 3600;
             const percentage = (diffSeconds / totalSeconds) * 100;
 
             document.getElementById('usage-time-left').textContent = timeText;
             document.getElementById('usage-progress-bar').style.width = `${percentage}%`;
-        }
-
-        function resetUsageTimer() {
-            const targetTime = new Date().getTime() + (4 * 3600 * 1000);
-            localStorage.setItem('wb_usage_target', targetTime);
-            updateUsageTracker();
         }
 
         // --- Standard Pomodoro Logic ---
@@ -289,6 +301,78 @@
             document.getElementById('latexModal').classList.toggle('active');
         }
 
+        // --- Unit Converter Logic ---
+        const unitData = {
+            prefix: {
+                rates: { 
+                    'Tera (T)': 1e12, 'Giga (G)': 1e9, 'Mega (M)': 1e6, 'Kilo (k)': 1e3, 
+                    'Base': 1, 
+                    'milli (m)': 1e-3, 'micro (µ)': 1e-6, 'nano (n)': 1e-9, 'pico (p)': 1e-12 
+                }
+            },
+            length: {
+                rates: { 'm': 1, 'km': 1000, 'cm': 0.01, 'mm': 0.001, 'mi': 1609.34, 'ft': 0.3048, 'in': 0.0254 }
+            },
+            mass: {
+                rates: { 'kg': 1, 'g': 0.001, 'mg': 1e-6, 'lb': 0.453592, 'oz': 0.0283495 }
+            },
+            temp: {
+                type: 'special',
+                values: ['C', 'F', 'K']
+            }
+        };
+
+        function updateUnitOptions() {
+            const cat = document.getElementById('conv-category').value;
+            const fromSel = document.getElementById('conv-from');
+            const toSel = document.getElementById('conv-to');
+            
+            fromSel.innerHTML = '';
+            toSel.innerHTML = '';
+
+            let options = [];
+            if (unitData[cat].type === 'special') {
+                options = unitData[cat].values;
+            } else {
+                options = Object.keys(unitData[cat].rates);
+            }
+
+            options.forEach(opt => {
+                fromSel.add(new Option(opt, opt));
+                toSel.add(new Option(opt, opt));
+            });
+
+            // Set logical defaults
+            toSel.selectedIndex = options.length > 1 ? 1 : 0;
+            convertUnits();
+        }
+
+        function convertUnits() {
+            const cat = document.getElementById('conv-category').value;
+            const val = parseFloat(document.getElementById('conv-input').value);
+            const from = document.getElementById('conv-from').value;
+            const to = document.getElementById('conv-to').value;
+            const resDisplay = document.getElementById('conv-result');
+
+            if (isNaN(val)) { resDisplay.textContent = "---"; return; }
+
+            let result;
+            if (cat === 'temp') {
+                let cel = val; // Convert to Celsius first
+                if (from === 'F') cel = (val - 32) * 5/9;
+                if (from === 'K') cel = val - 273.15;
+                
+                if (to === 'C') result = cel;
+                else if (to === 'F') result = (cel * 9/5) + 32;
+                else if (to === 'K') result = cel + 273.15;
+            } else {
+                const rates = unitData[cat].rates;
+                result = val * (rates[from] / rates[to]);
+            }
+
+            resDisplay.textContent = Math.abs(result) < 0.001 || Math.abs(result) > 10000 ? result.toExponential(4) : parseFloat(result.toFixed(4));
+        }
+
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(updateTime, 1000); 
@@ -299,6 +383,8 @@
             const savedNote = localStorage.getItem('wb_note');
             if(savedNote) document.getElementById('local-note').value = savedNote;
             document.getElementById('local-note').addEventListener('input', e => localStorage.setItem('wb_note', e.target.value));
+            
+            updateUnitOptions(); // Init converter
         });
     </script>
 </body>
