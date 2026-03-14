@@ -124,9 +124,30 @@
 
                 <div class="space-y-6">
                     <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Productivity</h3>
+                    
+                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-orange transition-all duration-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-orange opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-orange"></span>
+                                </span>
+                                <span class="font-semibold text-accent-orange text-xs uppercase tracking-wider">Refill Status</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-text-muted" id="refill-target">04:56 PM</span>
+                        </div>
+                        <div class="w-full bg-dark-bg rounded-full h-1.5 mb-3 overflow-hidden border border-white/5">
+                            <div id="refill-progress" class="bg-gradient-to-r from-accent-orange to-orange-600 h-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between items-center font-mono text-[10px]">
+                            <span class="text-text-main" id="refill-remaining">--h --m</span>
+                            <span class="text-text-muted" id="refill-percent">0%</span>
+                        </div>
+                    </div>
+
                     <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-accent-green text-sm">Pomodoro</span>
+                            <span class="font-semibold text-accent-green text-sm">Session</span>
                             <i class="fas fa-stopwatch text-gray-500"></i>
                         </div>
                         <div class="text-center font-mono text-2xl tracking-widest my-3 text-white" id="pomodoro-display">25:00</div>
@@ -135,6 +156,7 @@
                             <button onclick="resetPomodoro()" class="bg-gray-700 hover:bg-red-500 text-[10px] font-bold py-1 px-3 rounded transition-colors uppercase">Reset</button>
                         </div>
                     </div>
+                    
                     <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
                         <textarea id="local-note" class="w-full h-24 bg-dark-bg border border-border-color rounded p-2 text-xs text-text-main resize-none focus:outline-none font-mono" placeholder="Scratchpad..."></textarea>
                     </div>
@@ -144,12 +166,38 @@
 
         <footer class="glass-panel border-t border-border-color py-4">
             <div class="container mx-auto px-6 text-right text-[10px] text-gray-600 font-mono">
-                <span id="footer-year"></span> &copy; Prathamesh Deshmukh | Scientific Workbench v2.0
+                <span id="footer-year"></span> &copy; Prathamesh Deshmukh
             </div>
         </footer>
     </div>
 
     <script>
+        // --- Refill Tracker Logic ---
+        function updateRefillTracker() {
+            const totalWindowSeconds = 4 * 3600; // 4 Hours
+            const now = new Date();
+            const target = new Date();
+            target.setHours(16, 56, 0); // 4:56 PM
+
+            if (now > target) {
+                document.getElementById('refill-remaining').textContent = "Refilled";
+                document.getElementById('refill-progress').style.width = "100%";
+                document.getElementById('refill-percent').textContent = "100%";
+                return;
+            }
+
+            const diffSeconds = Math.floor((target - now) / 1000);
+            const elapsedSeconds = totalWindowSeconds - diffSeconds;
+            const percentage = Math.max(0, Math.min(100, (elapsedSeconds / totalWindowSeconds) * 100));
+            
+            const h = Math.floor(diffSeconds / 3600);
+            const m = Math.floor((diffSeconds % 3600) / 60);
+            
+            document.getElementById('refill-progress').style.width = percentage.toFixed(1) + "%";
+            document.getElementById('refill-percent').textContent = percentage.toFixed(1) + "%";
+            document.getElementById('refill-remaining').textContent = `${h}h ${m}m remaining`;
+        }
+
         // --- Unit Converter Logic ---
         const units = {
             temp: { types: ['C', 'F', 'K'], 
@@ -192,7 +240,7 @@
             } else {
                 pomoInterval = setInterval(() => {
                     if (pomoSecondsLeft > 0) { pomoSecondsLeft--; updatePomoDisplay(); }
-                    else { clearInterval(pomoInterval); alert("Session Finished!"); resetPomodoro(); }
+                    else { clearInterval(pomoInterval); resetPomodoro(); }
                 }, 1000);
                 btn.textContent = "Pause";
                 pomoRunning = true;
@@ -226,7 +274,10 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             updateUnitOptions();
-            setInterval(updateTime, 1000); updateTime();
+            setInterval(updateTime, 1000); 
+            setInterval(updateRefillTracker, 60000);
+            updateTime();
+            updateRefillTracker();
             const savedNote = localStorage.getItem('wb_note');
             if(savedNote) document.getElementById('local-note').value = savedNote;
             document.getElementById('local-note').addEventListener('input', e => localStorage.setItem('wb_note', e.target.value));
