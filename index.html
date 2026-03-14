@@ -70,7 +70,7 @@
     <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto">
         
         <div class="max-w-4xl mx-auto mb-10">
-            <form action="https://duckduckgo.com/" method="GET" id="searchForm" class="relative group" target="_blank" rel="noopener noreferrer">
+            <form action="https://duckduckgo.com/" method="GET" id="searchForm" class="relative group" target="_blank" rel="noopener noreferrer" onsubmit="return handleSearch(event)">
                 <input type="text" id="searchInput" name="q" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-40 focus:outline-none focus:border-accent-green shadow-lg transition-colors" placeholder="Search with DuckDuckGo..." autofocus autocomplete="off">
                 <i class="fas fa-search absolute left-4 top-4 text-text-muted group-focus-within:text-accent-green" id="searchIcon"></i>
                 
@@ -86,6 +86,9 @@
                     </button>
                     <button type="button" onclick="setEngine('scholar')" class="p-2 text-gray-400 hover:text-accent-orange transition-colors border-l border-white/10 pl-3 ml-1" title="Google Scholar">
                         <i class="fas fa-graduation-cap"></i>
+                    </button>
+                    <button type="button" onclick="setEngine('doi')" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="DOI Resolver">
+                        <i class="fas fa-barcode"></i>
                     </button>
                 </div>
             </form>
@@ -191,14 +194,31 @@
                     </a>
                 </div>
 
-                <textarea id="local-note" class="w-full h-16 bg-card-bg border border-border-color rounded-lg p-2 text-xs text-text-main focus:outline-none font-mono custom-card resize-none" placeholder="Local scratchpad..."></textarea>
+                <!-- Local Quick Links -->
+                <div class="custom-card bg-card-bg p-3 rounded-lg border border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-white text-xs uppercase tracking-wide">Quick Links</span>
+                        <i class="fas fa-link text-text-muted text-xs"></i>
+                    </div>
+                    <div id="quick-links-list" class="space-y-1 mb-2"></div>
+                    <div class="flex gap-1">
+                        <input type="text" id="ql-title" placeholder="Name" class="w-1/3 bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none">
+                        <input type="text" id="ql-url" placeholder="URL" class="w-full bg-dark-bg border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-accent-blue focus:outline-none" onkeypress="if(event.key==='Enter') addQuickLink()">
+                        <button onclick="addQuickLink()" class="bg-white/5 hover:bg-accent-green text-white px-2 py-1 rounded transition-colors"><i class="fas fa-plus text-xs"></i></button>
+                    </div>
+                </div>
+
+                <textarea id="local-note" class="w-full h-48 bg-card-bg border border-border-color rounded-lg p-2 text-xs text-text-main focus:outline-none font-mono custom-card resize-none" placeholder="Local scratchpad..."></textarea>
             </div>
         </div>
     </main>
 
     <script>
         // --- Search Engine Switcher ---
+        let currentSearchEngine = 'duckduckgo';
+
         function setEngine(engine) {
+            currentSearchEngine = engine;
             const form = document.getElementById('searchForm');
             const input = document.getElementById('searchInput');
             const icon = document.getElementById('searchIcon');
@@ -207,7 +227,8 @@
                 duckduckgo: { url: "https://duckduckgo.com/", placeholder: "Search with DuckDuckGo...", color: "text-accent-green" },
                 google: { url: "https://www.google.com/search", placeholder: "Search with Google...", color: "text-white" },
                 startpage: { url: "https://www.startpage.com/sp/search", placeholder: "Search with Startpage...", color: "text-accent-blue" },
-                scholar: { url: "https://scholar.google.com/scholar", placeholder: "Search Google Scholar...", color: "text-accent-orange" }
+                scholar: { url: "https://scholar.google.com/scholar", placeholder: "Search Google Scholar...", color: "text-accent-orange" },
+                doi: { url: "https://doi.org/", placeholder: "Paste DOI (e.g. 10.1038/nature123)...", color: "text-yellow-400" }
             };
 
             form.action = engines[engine].url;
@@ -217,6 +238,20 @@
             icon.className = `fas fa-search absolute left-4 top-4 group-focus-within:${engines[engine].color} ${engines[engine].color}`;
             input.className = `w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-12 pr-40 focus:outline-none focus:border-${engines[engine].color.split('-')[1]} shadow-lg transition-colors`;
             input.focus();
+        }
+
+        function handleSearch(e) {
+            if (currentSearchEngine === 'doi') {
+                e.preventDefault();
+                const query = document.getElementById('searchInput').value.trim();
+                if (query) {
+                    // Clean DOI input if user pasted full URL (removes https://doi.org/ prefix)
+                    const cleanQuery = query.replace(/^(https?:\/\/)?(dx\.)?doi\.org\//i, '');
+                    window.open(`https://doi.org/${cleanQuery}`, '_blank');
+                }
+                return false;
+            }
+            return true;
         }
 
         // --- Core Time & Date Logic ---
@@ -373,6 +408,61 @@
             resDisplay.textContent = Math.abs(result) < 0.001 || Math.abs(result) > 10000 ? result.toExponential(4) : parseFloat(result.toFixed(4));
         }
 
+        // --- Quick Links Logic ---
+        function initQuickLinks() {
+            renderQuickLinks();
+        }
+
+        function getQuickLinks() {
+            return JSON.parse(localStorage.getItem('wb_quick_links') || '[]');
+        }
+
+        function saveQuickLinks(links) {
+            localStorage.setItem('wb_quick_links', JSON.stringify(links));
+        }
+
+        function renderQuickLinks() {
+            const list = document.getElementById('quick-links-list');
+            const links = getQuickLinks();
+            list.innerHTML = '';
+            
+            links.forEach((link, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center group bg-white/5 p-1.5 rounded hover:bg-white/10 transition-colors';
+                div.innerHTML = `
+                    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-accent-blue hover:underline truncate mr-2">${link.title}</a>
+                    <button onclick="deleteQuickLink(${index})" class="text-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-times text-[10px]"></i></button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addQuickLink() {
+            const titleIn = document.getElementById('ql-title');
+            const urlIn = document.getElementById('ql-url');
+            const title = titleIn.value.trim();
+            let url = urlIn.value.trim();
+            
+            if (!title || !url) return;
+            
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            
+            const links = getQuickLinks();
+            links.push({ title, url });
+            saveQuickLinks(links);
+            renderQuickLinks();
+            
+            titleIn.value = '';
+            urlIn.value = '';
+        }
+
+        function deleteQuickLink(index) {
+            const links = getQuickLinks();
+            links.splice(index, 1);
+            saveQuickLinks(links);
+            renderQuickLinks();
+        }
+
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             setInterval(updateTime, 1000); 
@@ -385,6 +475,7 @@
             document.getElementById('local-note').addEventListener('input', e => localStorage.setItem('wb_note', e.target.value));
             
             updateUnitOptions(); // Init converter
+            initQuickLinks(); // Init quick links
         });
     </script>
 </body>
