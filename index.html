@@ -3,30 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Workbench | Research Edition</title>
     
-    <title>Scientific Workbench | Prathamesh Deshmukh</title>
-    <meta name="description" content="Secure, privacy-focused scientific workbench.">
-    <meta name="author" content="Prathamesh Deshmukh">
-    
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' https: data:;">
-    <meta name="referrer" content="no-referrer">
-    
-    <link rel="icon" href="https://github.com/prathameshnium.png" type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/117578336?v=4" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        'sans': ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-                        'mono': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
-                    },
                     colors: {
-                        'dark-bg': '#0f111a', 'card-bg': '#1a1d2d', 'card-hover': '#24283b',
+                        'dark-bg': '#0f111a', 'card-bg': 'rgba(26, 29, 45, 0.85)',
                         'accent-orange': '#F6AD55', 'accent-blue': '#63B3ED', 'accent-green': '#68D391',
-                        'text-main': '#E2E8F0', 'text-muted': '#94A3B8', 'border-color': '#2d3748'
+                        'text-main': '#E2E8F0', 'text-muted': '#94A3B8', 'border-color': 'rgba(255, 255, 255, 0.1)'
                     }
                 }
             }
@@ -34,250 +24,170 @@
     </script>
 
     <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f111a; }
-        ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
-        .glass-panel { background: rgba(26, 29, 45, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .search-input:focus { outline: none; box-shadow: 0 0 0 2px #F6AD55; }
+        body {
+            background: linear-gradient(rgba(15, 17, 26, 0.7), rgba(15, 17, 26, 0.7)), 
+                        url('https://wallpapers.com/images/hd/minimalist-silhouette-mountains-sunset-landscape-tunex867612uvknp.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+        .glass-panel { background: rgba(15, 17, 26, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .custom-card { backdrop-filter: blur(8px); transition: all 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .custom-card:hover { border-color: #63B3ED; transform: translateY(-2px); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
     </style>
 </head>
 
-<body class="antialiased font-sans bg-dark-bg text-text-main h-screen flex flex-col overflow-hidden">
+<body class="antialiased font-sans text-text-main h-screen flex flex-col overflow-hidden">
 
-    <div class="flex flex-col h-full">
-        <nav class="glass-panel border-b border-border-color z-50">
-            <div class="container mx-auto px-6 h-14 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <img src="https://github.com/prathameshnium.png" alt="Profile" class="w-8 h-8 rounded-full border border-accent-orange">
-                    <span class="font-bold text-lg tracking-tight">Scientific<span class="text-accent-orange">.Workbench</span></span>
-                </div>
-                <div class="font-mono text-accent-blue text-lg font-semibold tracking-wider" id="clock">00:00:00</div>
-                <div class="hidden md:block text-sm text-text-muted" id="date">Loading...</div>
+    <div id="latexModal" class="modal p-4" onclick="toggleModal()">
+        <div class="bg-card-bg border border-accent-blue p-6 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-accent-blue font-bold">LaTeX Symbols Quick-Ref</h2>
+                <button onclick="toggleModal()" class="text-text-muted hover:text-white">&times;</button>
             </div>
-        </nav>
-
-        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto">
-            
-            <div class="max-w-3xl mx-auto mb-12 mt-4">
-                <form action="https://www.google.com/search" method="GET" id="searchForm" class="relative group" target="_blank" rel="noopener">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-text-muted group-focus-within:text-accent-orange transition-colors"></i>
-                    </div>
-                    <input type="text" name="q" class="search-input w-full bg-card-bg text-white border border-border-color rounded-xl py-4 pl-12 pr-40 shadow-lg placeholder-gray-500 transition-all duration-300 focus:bg-gray-800" placeholder="Search the cosmos..." autofocus autocomplete="off">
-                    
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
-                        <button type="button" onclick="setEngine('google')" class="p-2 text-gray-400 hover:text-white" title="Google"><i class="fab fa-google"></i></button>
-                        <button type="button" onclick="setEngine('brave')" class="p-2 text-gray-400 hover:text-accent-orange" title="Brave"><i class="fas fa-lion"></i></button>
-                        <button type="button" onclick="setEngine('scholar')" class="p-2 text-gray-400 hover:text-white" title="Scholar"><i class="fas fa-graduation-cap"></i></button>
-                    </div>
-                </form>
-                <div class="text-center mt-2 text-xs text-gray-600 font-mono" id="search-label">Searching: Google</div>
+            <div class="grid grid-cols-2 gap-4 font-mono text-sm">
+                <div class="bg-black/30 p-2 rounded">$\alpha, \beta, \gamma$ : \alpha \beta \gamma</div>
+                <div class="bg-black/30 p-2 rounded">$\hbar, \partial, \nabla$ : \hbar \partial \nabla</div>
+                <div class="bg-black/30 p-2 rounded">$\int, \sum, \prod$ : \int \sum \prod</div>
+                <div class="bg-black/30 p-2 rounded">$\infty, \approx, \neq$ : \infty \approx \neq</div>
+                <div class="bg-black/30 p-2 rounded">$\frac{a}{b}$ : \frac{a}{b}</div>
+                <div class="bg-black/30 p-2 rounded">$\sqrt{x}$ : \sqrt{x}</div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                
-                <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Research</h3>
-                    <a href="https://scholar.google.com" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
-                        <span class="font-semibold block">Google Scholar</span>
-                        <p class="text-xs text-text-muted mt-1">Literature search</p>
-                    </a>
-                    <a href="https://arxiv.org/" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
-                        <span class="font-semibold block">arXiv</span>
-                        <p class="text-xs text-text-muted mt-1">Latest Preprints</p>
-                    </a>
-                </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Code</h3>
-                    <a href="https://github.com/prathameshnium" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
-                        <span class="font-semibold block">GitHub</span>
-                        <p class="text-xs text-text-muted mt-1">Repositories</p>
-                    </a>
-                    <a href="https://colab.research.google.com/" target="_blank" class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-blue transition-all">
-                        <span class="font-semibold block">Google Colab</span>
-                        <p class="text-xs text-text-muted mt-1">Python Notebooks</p>
-                    </a>
-                </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Intelligence</h3>
-                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-accent-blue text-sm">Unit Converter</span>
-                            <i class="fas fa-exchange-alt text-gray-500"></i>
-                        </div>
-                        <select id="conv-category" class="w-full bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white mb-2 focus:outline-none" onchange="updateUnitOptions()">
-                            <option value="length">Length</option>
-                            <option value="weight">Mass</option>
-                            <option value="temp">Temperature</option>
-                            <option value="data">Digital Data</option>
-                        </select>
-                        <input type="number" id="conv-input" placeholder="Value" class="w-full bg-dark-bg border border-border-color rounded px-2 py-1 text-sm text-white mb-2 font-mono" oninput="convertUnits()">
-                        <div class="flex gap-1 mb-2">
-                            <select id="conv-from" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white" onchange="convertUnits()"></select>
-                            <select id="conv-to" class="w-1/2 bg-dark-bg border border-border-color rounded px-1 py-1 text-xs text-white" onchange="convertUnits()"></select>
-                        </div>
-                        <div id="conv-result" class="text-center font-mono text-sm text-accent-orange bg-dark-bg/50 py-1 rounded">---</div>
-                    </div>
-                </div>
-
-                <div class="space-y-6">
-                    <h3 class="text-accent-orange font-mono text-sm uppercase tracking-widest border-b border-border-color pb-2 mb-4">Productivity</h3>
-                    
-                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color hover:border-accent-orange transition-all duration-200">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-2">
-                                <span class="relative flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-orange opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-orange"></span>
-                                </span>
-                                <span class="font-semibold text-accent-orange text-xs uppercase tracking-wider">Refill Status</span>
-                            </div>
-                            <span class="text-[10px] font-mono text-text-muted" id="refill-target">04:56 PM</span>
-                        </div>
-                        <div class="w-full bg-dark-bg rounded-full h-1.5 mb-3 overflow-hidden border border-white/5">
-                            <div id="refill-progress" class="bg-gradient-to-r from-accent-orange to-orange-600 h-full transition-all duration-1000" style="width: 0%"></div>
-                        </div>
-                        <div class="flex justify-between items-center font-mono text-[10px]">
-                            <span class="text-text-main" id="refill-remaining">--h --m</span>
-                            <span class="text-text-muted" id="refill-percent">0%</span>
-                        </div>
-                    </div>
-
-                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-semibold text-accent-green text-sm">Session</span>
-                            <i class="fas fa-stopwatch text-gray-500"></i>
-                        </div>
-                        <div class="text-center font-mono text-2xl tracking-widest my-3 text-white" id="pomodoro-display">25:00</div>
-                        <div class="flex justify-center gap-2">
-                            <button onclick="toggleTimer()" id="pomo-btn" class="bg-gray-700 hover:bg-accent-green hover:text-black text-[10px] font-bold py-1 px-3 rounded transition-colors uppercase">Start</button>
-                            <button onclick="resetPomodoro()" class="bg-gray-700 hover:bg-red-500 text-[10px] font-bold py-1 px-3 rounded transition-colors uppercase">Reset</button>
-                        </div>
-                    </div>
-                    
-                    <div class="block bg-card-bg p-4 rounded-lg border border-border-color">
-                        <textarea id="local-note" class="w-full h-24 bg-dark-bg border border-border-color rounded p-2 text-xs text-text-main resize-none focus:outline-none font-mono" placeholder="Scratchpad..."></textarea>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer class="glass-panel border-t border-border-color py-4">
-            <div class="container mx-auto px-6 text-right text-[10px] text-gray-600 font-mono">
-                <span id="footer-year"></span> &copy; Prathamesh Deshmukh
-            </div>
-        </footer>
+        </div>
     </div>
 
+    <nav class="glass-panel z-50">
+        <div class="container mx-auto px-6 h-14 flex justify-between items-center">
+            <span class="font-bold text-lg tracking-tight">Scientific<span class="text-accent-orange">.Workbench</span></span>
+            <div class="font-mono text-accent-blue text-lg font-semibold tracking-wider" id="clock">00:00:00</div>
+            <div class="hidden md:flex items-center gap-2 text-sm text-text-muted">
+                <span id="date"></span> <span id="date-marathi" class="text-accent-orange font-medium border-l border-white/20 pl-2"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto">
+        
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            <div class="md:col-span-2">
+                <form action="https://www.google.com/search" method="GET" id="searchForm" class="relative group">
+                    <input type="text" name="q" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-accent-orange" placeholder="Search the cosmos..." autofocus>
+                    <i class="fas fa-search absolute left-3 top-4 text-text-muted group-focus-within:text-accent-orange"></i>
+                </form>
+            </div>
+            <div class="relative">
+                <input type="text" id="doiInput" class="w-full bg-card-bg text-white border border-border-color rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:border-accent-blue" placeholder="Resolve DOI (10.1038...)">
+                <i class="fas fa-fingerprint absolute left-3 top-4 text-accent-blue"></i>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            
+            <div class="space-y-4">
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Physics & Papers</h3>
+                <a href="https://arxiv.org/list/physics/new" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg">
+                    <span class="font-semibold text-sm block">arXiv Physics</span>
+                    <p class="text-[10px] text-text-muted">New Preprints</p>
+                </a>
+                <a href="https://inspirehep.net/" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg">
+                    <span class="font-semibold text-sm block">INSPIRE-HEP</span>
+                    <p class="text-[10px] text-text-muted">High Energy Physics Database</p>
+                </a>
+                <a href="https://physics.nist.gov/cuu/Constants/" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg">
+                    <span class="font-semibold text-sm block">NIST Constants</span>
+                    <p class="text-[10px] text-text-muted">Fundamental Physical Constants</p>
+                </a>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Writing Tools</h3>
+                <a href="https://www.overleaf.com/project" target="_blank" class="custom-card block bg-card-bg p-3 rounded-lg border-l-4 border-l-accent-green">
+                    <span class="font-semibold text-sm block">Overleaf</span>
+                    <p class="text-[10px] text-text-muted">Active LaTeX Projects</p>
+                </a>
+                <button onclick="toggleModal()" class="w-full text-left custom-card block bg-card-bg p-3 rounded-lg">
+                    <span class="font-semibold text-sm block">LaTeX Symbols</span>
+                    <p class="text-[10px] text-accent-blue">Quick Reference Guide</p>
+                </button>
+                <div class="flex gap-2">
+                    <a href="https://www.zotero.org/mylibrary" target="_blank" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold">Zotero</a>
+                    <a href="https://www.mendeley.com/library/" target="_blank" class="w-1/2 custom-card bg-card-bg p-2 rounded text-center text-xs font-bold">Mendeley</a>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Analysis</h3>
+                <div class="custom-card bg-card-bg p-3 rounded-lg">
+                    <span class="text-accent-blue text-xs font-bold mb-2 block">Unit Converter</span>
+                    <select id="conv-category" class="w-full bg-black/40 border border-white/10 rounded px-1 py-1 text-[10px] mb-2" onchange="updateUnitOptions()">
+                        <option value="length">Length</option><option value="weight">Mass</option><option value="temp">Temp</option>
+                    </select>
+                    <input type="number" id="conv-input" class="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-xs mb-2 font-mono" oninput="convertUnits()">
+                    <div id="conv-result" class="text-center font-mono text-xs text-accent-orange bg-black/40 py-1 rounded">---</div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-accent-orange font-mono text-xs uppercase tracking-widest border-b border-white/10 pb-2">Productivity</h3>
+                <div class="custom-card bg-card-bg p-3 rounded-lg text-center">
+                    <div class="text-xl font-mono text-white mb-2" id="pomodoro-display">25:00</div>
+                    <button onclick="toggleTimer()" id="pomo-btn" class="bg-accent-green/20 hover:bg-accent-green text-accent-green hover:text-black text-[10px] font-bold py-1 px-4 rounded transition-all">START</button>
+                </div>
+                <textarea id="local-note" class="w-full h-32 bg-card-bg border border-border-color rounded-lg p-3 text-xs text-text-main focus:outline-none font-mono" placeholder="Scratchpad (Auto-saves)..."></textarea>
+            </div>
+        </div>
+    </main>
+
+    <footer class="glass-panel py-3">
+        <div class="container mx-auto px-6 text-right text-[10px] text-gray-400 font-mono">
+            &copy; <span id="footer-year"></span> Prathamesh Deshmukh
+        </div>
+    </footer>
+
     <script>
-        // --- Refill Tracker Logic ---
-        function updateRefillTracker() {
-            const totalWindowSeconds = 4 * 3600; // 4 Hours
-            const now = new Date();
-            const target = new Date();
-            target.setHours(16, 56, 0); // 4:56 PM
-
-            if (now > target) {
-                document.getElementById('refill-remaining').textContent = "Refilled";
-                document.getElementById('refill-progress').style.width = "100%";
-                document.getElementById('refill-percent').textContent = "100%";
-                return;
+        // DOI Resolver
+        document.getElementById('doiInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const doi = this.value.trim();
+                if (doi) window.open(`https://doi.org/${doi}`, '_blank');
             }
+        });
 
-            const diffSeconds = Math.floor((target - now) / 1000);
-            const elapsedSeconds = totalWindowSeconds - diffSeconds;
-            const percentage = Math.max(0, Math.min(100, (elapsedSeconds / totalWindowSeconds) * 100));
-            
-            const h = Math.floor(diffSeconds / 3600);
-            const m = Math.floor((diffSeconds % 3600) / 60);
-            
-            document.getElementById('refill-progress').style.width = percentage.toFixed(1) + "%";
-            document.getElementById('refill-percent').textContent = percentage.toFixed(1) + "%";
-            document.getElementById('refill-remaining').textContent = `${h}h ${m}m remaining`;
+        // Modal Toggle
+        function toggleModal() {
+            document.getElementById('latexModal').classList.toggle('active');
         }
 
-        // --- Unit Converter Logic ---
-        const units = {
-            temp: { types: ['C', 'F', 'K'], 
-                toBase: (v, t) => t==='C'?v : t==='F'?(v-32)*5/9 : v-273.15,
-                fromBase: (v, t) => t==='C'?v : t==='F'?(v*9/5)+32 : v+273.15 },
-            length: { rates: { m:1, km:1000, cm:0.01, mm:0.001, mi:1609.34, ft:0.3048, in:0.0254 } },
-            weight: { rates: { kg:1, g:0.001, mg:0.000001, lb:0.453592, oz:0.0283495 } },
-            data: { rates: { B:1, KB:1024, MB:1024**2, GB:1024**3, TB:1024**4 } }
-        };
-
-        function updateUnitOptions() {
-            const cat = document.getElementById('conv-category').value;
-            const fromSel = document.getElementById('conv-from'), toSel = document.getElementById('conv-to');
-            fromSel.innerHTML = ''; toSel.innerHTML = '';
-            const options = units[cat].types || Object.keys(units[cat].rates);
-            options.forEach(opt => {
-                fromSel.add(new Option(opt, opt));
-                toSel.add(new Option(opt, opt));
-            });
-            toSel.selectedIndex = 1;
-            convertUnits();
+        // Time Logic
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB');
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+            document.getElementById('date-marathi').textContent = now.toLocaleDateString('mr-IN', { weekday: 'long' });
+            document.getElementById('footer-year').textContent = now.getFullYear();
         }
 
-        function convertUnits() {
-            const val = parseFloat(document.getElementById('conv-input').value);
-            if (isNaN(val)) { document.getElementById('conv-result').textContent = "---"; return; }
-            const cat = document.getElementById('conv-category').value, from = document.getElementById('conv-from').value, to = document.getElementById('conv-to').value;
-            let res = cat === 'temp' ? units.temp.fromBase(units.temp.toBase(val, from), to) : (val * units[cat].rates[from]) / units[cat].rates[to];
-            document.getElementById('conv-result').textContent = res.toLocaleString(undefined, {maximumFractionDigits: 4});
-        }
-
-        // --- Timer Logic ---
+        // --- Core Functions (Retained) ---
         let pomoInterval, pomoSecondsLeft = 1500, pomoRunning = false;
         function toggleTimer() {
             const btn = document.getElementById('pomo-btn');
-            if (pomoRunning) {
-                clearInterval(pomoInterval);
-                btn.textContent = "Resume";
-                pomoRunning = false;
-            } else {
+            if (pomoRunning) { clearInterval(pomoInterval); btn.textContent = "START"; pomoRunning = false; }
+            else {
                 pomoInterval = setInterval(() => {
                     if (pomoSecondsLeft > 0) { pomoSecondsLeft--; updatePomoDisplay(); }
-                    else { clearInterval(pomoInterval); resetPomodoro(); }
+                    else { clearInterval(pomoInterval); alert('Session Complete!'); resetPomodoro(); }
                 }, 1000);
-                btn.textContent = "Pause";
-                pomoRunning = true;
+                btn.textContent = "PAUSE"; pomoRunning = true;
             }
-        }
-        function resetPomodoro() {
-            clearInterval(pomoInterval);
-            pomoSecondsLeft = 1500; pomoRunning = false;
-            document.getElementById('pomo-btn').textContent = "Start";
-            updatePomoDisplay();
         }
         function updatePomoDisplay() {
             const m = Math.floor(pomoSecondsLeft / 60), s = pomoSecondsLeft % 60;
             document.getElementById('pomodoro-display').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
-
-        // --- Core Utilities ---
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB');
-            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday:'short', day:'numeric', month:'short' });
-            document.getElementById('footer-year').textContent = now.getFullYear();
-        }
-
-        function setEngine(engine) {
-            const form = document.getElementById('searchForm'), label = document.getElementById('search-label');
-            const engines = { google: "https://www.google.com/search", brave: "https://search.brave.com/search", scholar: "https://scholar.google.com/scholar" };
-            form.action = engines[engine];
-            label.textContent = `Searching: ${engine.charAt(0).toUpperCase() + engine.slice(1)}`;
-        }
+        function resetPomodoro() { clearInterval(pomoInterval); pomoSecondsLeft = 1500; updatePomoDisplay(); }
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateUnitOptions();
-            setInterval(updateTime, 1000); 
-            setInterval(updateRefillTracker, 60000);
-            updateTime();
-            updateRefillTracker();
+            setInterval(updateTime, 1000); updateTime();
             const savedNote = localStorage.getItem('wb_note');
             if(savedNote) document.getElementById('local-note').value = savedNote;
             document.getElementById('local-note').addEventListener('input', e => localStorage.setItem('wb_note', e.target.value));
