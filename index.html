@@ -8,6 +8,9 @@
     >
     <title>Scientific Workbench | Research Hub</title>
 
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+    <link rel="apple-touch-icon" href="assets/logo.svg">
+
     <meta
         http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; connect-src 'self' https:;"
@@ -47,10 +50,79 @@
                     rgba(15, 17, 26, 0.75),
                     rgba(15, 17, 26, 0.75)
                 ),
-                url("https://wallpapers.com/images/hd/minimalist-silhouette-mountains-sunset-landscape-tunex867612uvknp.jpg");
+                /* Background image stored locally in this repo.
+                   Source: https://wallpapers.com/images/hd/minimalist-silhouette-mountains-sunset-landscape-tunex867612uvknp.jpg
+                   See assets/CREDITS.md for attribution. */
+                url("assets/background.jpg");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+        }
+
+        /* ─── Pomodoro ─────────────────────────────────────────────────────── */
+        .pomo-ring-wrap {
+            position: relative;
+            width: 11rem;
+            height: 11rem;
+            max-width: 100%;
+        }
+
+        .pomo-ring {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .pomo-ring-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.07);
+            stroke-width: 7;
+        }
+
+        .pomo-ring-fill {
+            fill: none;
+            stroke: #68d391;
+            stroke-width: 7;
+            stroke-linecap: round;
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.6s linear, stroke 0.4s ease;
+        }
+
+        .pomo-time {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 640px) {
+            .pomo-ring-wrap {
+                width: 13rem;
+                height: 13rem;
+            }
+
+            .pomo-time {
+                font-size: 2.9rem;
+            }
+        }
+
+        .pomo-done {
+            animation: pomo-pulse 1s ease-in-out 3;
+        }
+
+        @keyframes pomo-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pomo-ring-fill { transition: none; }
+            .pomo-done { animation: none; }
         }
 
         .glass-panel {
@@ -291,11 +363,20 @@
         <div
             class="container mx-auto px-6 h-14 flex justify-between items-center"
         >
-            <span class="font-bold text-lg tracking-tight"
-                >Scientific<span class="text-accent-orange"
-                    >.Workbench</span
-                ></span
-            >
+            <a href="./" class="flex items-center gap-2.5 group">
+                <img
+                    src="assets/logo.svg"
+                    alt="Scientific Workbench logo"
+                    width="32"
+                    height="32"
+                    class="w-8 h-8 shrink-0 drop-shadow group-hover:scale-105 transition-transform"
+                >
+                <span class="font-bold text-lg tracking-tight"
+                    >Scientific<span class="text-accent-orange"
+                        >.Workbench</span
+                    ></span
+                >
+            </a>
             <div
                 class="font-mono text-accent-blue text-lg font-semibold tracking-wider"
                 id="clock"
@@ -744,29 +825,83 @@
                     </div>
                 </div>
 
-                <div class="custom-card bg-card-bg p-4 rounded-xl text-center">
+                <div class="custom-card bg-card-bg p-5 rounded-xl text-center">
                     <div
-                        class="text-3xl font-mono text-white mb-3 tracking-widest"
-                        id="pomodoro-display"
+                        class="text-text-muted text-[10px] uppercase tracking-widest font-mono mb-3"
                     >
-                        25:00
+                        Pomodoro
                     </div>
+
+                    <div class="pomo-ring-wrap mx-auto mb-4">
+                        <svg
+                            class="pomo-ring"
+                            viewBox="0 0 120 120"
+                            aria-hidden="true"
+                        >
+                            <circle
+                                class="pomo-ring-track"
+                                cx="60"
+                                cy="60"
+                                r="54"
+                            ></circle>
+                            <circle
+                                id="pomo-ring-fill"
+                                class="pomo-ring-fill"
+                                cx="60"
+                                cy="60"
+                                r="54"
+                            ></circle>
+                        </svg>
+                        <div
+                            class="pomo-time font-mono text-white tracking-widest"
+                            id="pomodoro-display"
+                            role="timer"
+                            aria-live="off"
+                        >
+                            25:00
+                        </div>
+                    </div>
+
                     <div class="flex w-full gap-2">
                         <button
                             onclick="toggleTimer()"
                             id="pomo-btn"
-                            class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-xs font-bold py-2 rounded transition-colors uppercase tracking-wider"
+                            class="flex-1 bg-white/5 hover:bg-accent-green hover:text-black text-sm font-bold py-2.5 rounded-lg transition-colors uppercase tracking-wider"
                         >
                             Start
                         </button>
                         <button
                             onclick="resetPomodoro()"
-                            class="bg-white/5 hover:bg-red-500 hover:text-white text-xs font-bold px-4 py-2 rounded transition-colors"
+                            class="bg-white/5 hover:bg-red-500 hover:text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors"
                             title="Reset"
+                            aria-label="Reset pomodoro"
                         >
                             <i class="fas fa-redo-alt"></i>
                         </button>
                     </div>
+
+                    <label
+                        class="mt-3 flex items-center justify-center gap-2 text-[11px]
+                               text-text-muted cursor-pointer select-none hover:text-white transition-colors"
+                        title="Play a chime when the session ends"
+                    >
+                        <input
+                            type="checkbox"
+                            id="pomo-chime-toggle"
+                            checked
+                            onchange="togglePomoChime(this.checked)"
+                            class="accent-accent-green w-3.5 h-3.5"
+                        >
+                        <span>Chime when done</span>
+                        <button
+                            type="button"
+                            onclick="event.preventDefault(); playCompletionTone();"
+                            class="text-accent-blue hover:underline"
+                            title="Preview the chime"
+                        >
+                            preview
+                        </button>
+                    </label>
                 </div>
 
                 <div class="flex gap-2">
@@ -952,12 +1087,25 @@
 
         // ─── Pomodoro ─────────────────────────────────────────────────────────────
         const POMO_TOTAL = 1500;
+        const POMO_RING_CIRCUMFERENCE = 2 * Math.PI * 54; // r = 54 in the SVG
         let pomoLeft = POMO_TOTAL;
         let pomoTimer = null;
         let pomoRunning = false;
+        let pomoChimeEnabled = true;
+
+        function togglePomoChime(enabled) {
+            pomoChimeEnabled = !!enabled;
+            localStorage.setItem("wb_pomo_chime", pomoChimeEnabled ? "1" : "0");
+        }
 
         function toggleTimer() {
             const btn = document.getElementById("pomo-btn");
+            // Unlock the audio context on this gesture so the end-of-session
+            // chime is allowed to play later without user interaction.
+            try {
+                getCtx();
+            } catch (_) {}
+
             if (pomoRunning) {
                 clearInterval(pomoTimer);
                 btn.textContent = "Resume";
@@ -970,8 +1118,7 @@
                     } else {
                         clearInterval(pomoTimer);
                         pomoRunning = false;
-                        showToast("🍅 Focus session complete!");
-                        resetPomodoro();
+                        completePomodoro();
                     }
                 }, 1000);
                 btn.textContent = "Pause";
@@ -979,11 +1126,30 @@
             }
         }
 
+        function completePomodoro() {
+            const display = document.getElementById("pomodoro-display");
+            showToast("🍅 Focus session complete!");
+            if (pomoChimeEnabled) playCompletionTone();
+            display.classList.add("pomo-done");
+            setTimeout(() => display.classList.remove("pomo-done"), 3200);
+            resetPomodoro();
+        }
+
         function renderPomo() {
             const m = String(Math.floor(pomoLeft / 60)).padStart(2, "0");
             const s = String(pomoLeft % 60).padStart(2, "0");
             document.getElementById("pomodoro-display").textContent =
                 `${m}:${s}`;
+
+            const ring = document.getElementById("pomo-ring-fill");
+            if (ring) {
+                const progress = pomoLeft / POMO_TOTAL;
+                ring.style.strokeDasharray = POMO_RING_CIRCUMFERENCE;
+                ring.style.strokeDashoffset =
+                    POMO_RING_CIRCUMFERENCE * (1 - progress);
+                ring.style.stroke =
+                    pomoLeft <= 60 ? "#F6AD55" : "#68D391";
+            }
         }
 
         function resetPomodoro() {
@@ -992,6 +1158,60 @@
             pomoRunning = false;
             document.getElementById("pomo-btn").textContent = "Start";
             renderPomo();
+        }
+
+        // Three-note bell played on its own gain so the ambient volume slider
+        // cannot silence it.
+        function playCompletionTone() {
+            let ctx;
+            try {
+                ctx = getCtx();
+            } catch (_) {
+                return;
+            }
+
+            const now = ctx.currentTime;
+            const bell = ctx.createGain();
+            bell.gain.value = 0.9;
+            bell.connect(ctx.destination);
+
+            // C6 – E6 – G6 arpeggio, each note a soft struck bell.
+            [
+                { freq: 1046.5, at: 0.0 },
+                { freq: 1318.5, at: 0.18 },
+                { freq: 1568.0, at: 0.36 },
+            ].forEach(({ freq, at }) => {
+                const t = now + at;
+                const osc = ctx.createOscillator();
+                const partial = ctx.createOscillator();
+                const env = ctx.createGain();
+
+                osc.type = "sine";
+                osc.frequency.value = freq;
+                partial.type = "sine";
+                partial.frequency.value = freq * 2.76; // inharmonic bell partial
+
+                const partialGain = ctx.createGain();
+                partialGain.gain.value = 0.12;
+                partial.connect(partialGain).connect(env);
+                osc.connect(env);
+                env.connect(bell);
+
+                env.gain.setValueAtTime(0.0001, t);
+                env.gain.exponentialRampToValueAtTime(0.28, t + 0.012);
+                env.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+
+                osc.start(t);
+                partial.start(t);
+                osc.stop(t + 1.7);
+                partial.stop(t + 1.7);
+            });
+
+            setTimeout(() => {
+                try {
+                    bell.disconnect();
+                } catch (_) {}
+            }, 2600);
         }
 
         // ─── Toast Notification ───────────────────────────────────────────────────
@@ -1700,6 +1920,12 @@
             note.addEventListener("input", () =>
                 localStorage.setItem("wb_note", note.value)
             );
+
+            const chimePref = localStorage.getItem("wb_pomo_chime");
+            pomoChimeEnabled = chimePref !== "0";
+            document.getElementById("pomo-chime-toggle").checked =
+                pomoChimeEnabled;
+            renderPomo();
 
             updateUnitOptions();
             renderQuickLinks();
