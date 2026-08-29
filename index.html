@@ -13,7 +13,7 @@
 
     <meta
         http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; connect-src 'self' https:;"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; connect-src 'self' https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com;"
     >
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
@@ -109,6 +109,73 @@
             .pomo-time {
                 font-size: 2.9rem;
             }
+        }
+
+        /* Full-screen focus mode */
+        #pomo-focus {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.75rem;
+            padding: 2rem 1.25rem;
+            background: rgba(9, 10, 16, 0.94);
+            backdrop-filter: blur(18px);
+            overflow-y: auto;
+        }
+
+        #pomo-focus.active {
+            display: flex;
+        }
+
+        body.pomo-focused {
+            overflow: hidden;
+        }
+
+        #pomo-focus .pomo-ring-wrap {
+            width: min(62vh, 78vw, 30rem);
+            height: min(62vh, 78vw, 30rem);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        /* Make room for the player without pushing the timer off-screen. */
+        #pomo-focus.with-music .pomo-ring-wrap {
+            width: min(36vh, 60vw, 18rem);
+            height: min(36vh, 60vw, 18rem);
+        }
+
+        #pomo-focus.with-music .pomo-time {
+            font-size: clamp(2.5rem, 9vh, 5rem);
+        }
+
+        #pomo-focus .pomo-ring-track,
+        #pomo-focus .pomo-ring-fill {
+            stroke-width: 4;
+        }
+
+        #pomo-focus .pomo-time {
+            font-size: clamp(3.5rem, 15vh, 9rem);
+            font-weight: 300;
+            letter-spacing: 0.06em;
+        }
+
+        .pomo-yt-frame {
+            width: min(560px, 92vw);
+            aspect-ratio: 16 / 9;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .pomo-yt-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
         }
 
         .pomo-done {
@@ -826,10 +893,20 @@
                 </div>
 
                 <div class="custom-card bg-card-bg p-5 rounded-xl text-center">
-                    <div
-                        class="text-text-muted text-[10px] uppercase tracking-widest font-mono mb-3"
-                    >
-                        Pomodoro
+                    <div class="flex items-center justify-between mb-3">
+                        <span
+                            class="text-text-muted text-[10px] uppercase tracking-widest font-mono"
+                        >
+                            Pomodoro
+                        </span>
+                        <button
+                            onclick="enterPomoFocus()"
+                            class="text-text-muted hover:text-accent-green text-xs transition-colors"
+                            title="Full-screen focus mode"
+                            aria-label="Full-screen focus mode"
+                        >
+                            <i class="fas fa-expand"></i>
+                        </button>
                     </div>
 
                     <div class="pomo-ring-wrap mx-auto mb-4">
@@ -924,6 +1001,95 @@
                         Bluesky
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Full-screen Pomodoro focus mode -->
+        <div
+            id="pomo-focus"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Pomodoro focus mode"
+        >
+            <button
+                onclick="exitPomoFocus()"
+                class="absolute top-5 right-5 text-text-muted hover:text-white text-sm
+                       px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/40 transition-colors"
+                title="Exit focus mode (Esc)"
+            >
+                <i class="fas fa-compress mr-1.5"></i> Exit
+            </button>
+
+            <div
+                class="text-text-muted text-[11px] uppercase tracking-[0.35em] font-mono"
+            >
+                Focus
+            </div>
+
+            <div class="pomo-ring-wrap">
+                <svg class="pomo-ring" viewBox="0 0 120 120" aria-hidden="true">
+                    <circle
+                        class="pomo-ring-track"
+                        cx="60"
+                        cy="60"
+                        r="54"
+                    ></circle>
+                    <circle
+                        id="pomo-ring-fill-lg"
+                        class="pomo-ring-fill"
+                        cx="60"
+                        cy="60"
+                        r="54"
+                    ></circle>
+                </svg>
+                <div
+                    class="pomo-time font-mono text-white"
+                    id="pomodoro-display-lg"
+                    role="timer"
+                    aria-live="off"
+                >
+                    25:00
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button
+                    onclick="toggleTimer()"
+                    id="pomo-btn-lg"
+                    class="min-w-[9rem] bg-white/5 hover:bg-accent-green hover:text-black
+                           text-sm font-bold py-3 px-6 rounded-lg transition-colors uppercase tracking-widest"
+                >
+                    Start
+                </button>
+                <button
+                    onclick="resetPomodoro()"
+                    class="bg-white/5 hover:bg-red-500 hover:text-white text-sm font-bold px-5 py-3 rounded-lg transition-colors"
+                    title="Reset"
+                    aria-label="Reset pomodoro"
+                >
+                    <i class="fas fa-redo-alt"></i>
+                </button>
+            </div>
+
+            <!-- Focus music: standard YouTube embed, played only on request. -->
+            <div class="flex flex-col items-center gap-2">
+                <button
+                    id="pomo-music-btn"
+                    onclick="togglePomoMusic()"
+                    class="text-[11px] font-semibold px-4 py-1.5 rounded-full border border-white/10
+                           text-text-muted hover:text-white hover:border-white/40 transition-colors"
+                >
+                    <i class="fab fa-youtube mr-1.5"></i> Play focus music
+                </button>
+                <div id="pomo-yt-wrap" class="pomo-yt-frame hidden"></div>
+                <a
+                    href="https://www.youtube.com/watch?v=q76bMs-NwRk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[10px] text-text-muted hover:text-accent-blue transition-colors"
+                >
+                    Watch on YouTube ↗
+                </a>
             </div>
         </div>
     </main>
@@ -1098,8 +1264,14 @@
             localStorage.setItem("wb_pomo_chime", pomoChimeEnabled ? "1" : "0");
         }
 
+        function setPomoBtnLabel(label) {
+            ["pomo-btn", "pomo-btn-lg"].forEach((id) => {
+                const b = document.getElementById(id);
+                if (b) b.textContent = label;
+            });
+        }
+
         function toggleTimer() {
-            const btn = document.getElementById("pomo-btn");
             // Unlock the audio context on this gesture so the end-of-session
             // chime is allowed to play later without user interaction.
             try {
@@ -1108,9 +1280,10 @@
 
             if (pomoRunning) {
                 clearInterval(pomoTimer);
-                btn.textContent = "Resume";
+                setPomoBtnLabel("Resume");
                 pomoRunning = false;
             } else {
+                enterPomoFocus();
                 pomoTimer = setInterval(() => {
                     if (pomoLeft > 0) {
                         pomoLeft--;
@@ -1121,42 +1294,107 @@
                         completePomodoro();
                     }
                 }, 1000);
-                btn.textContent = "Pause";
+                setPomoBtnLabel("Pause");
                 pomoRunning = true;
             }
         }
 
+        // ─── Focus mode ───────────────────────────────────────────────────────────
+        function enterPomoFocus() {
+            document.getElementById("pomo-focus").classList.add("active");
+            document.body.classList.add("pomo-focused");
+            renderPomo();
+        }
+
+        function exitPomoFocus() {
+            document.getElementById("pomo-focus").classList.remove("active");
+            document.body.classList.remove("pomo-focused");
+            stopPomoMusic();
+        }
+
+        // Focus music — standard YouTube embed, loaded only when the user asks
+        // for it and torn down when focus mode closes.
+        const POMO_MUSIC_ID = "q76bMs-NwRk";
+
+        function togglePomoMusic() {
+            const wrap = document.getElementById("pomo-yt-wrap");
+            if (wrap.querySelector("iframe")) {
+                stopPomoMusic();
+                return;
+            }
+
+            const iframe = document.createElement("iframe");
+            iframe.src =
+                "https://www.youtube-nocookie.com/embed/" +
+                POMO_MUSIC_ID +
+                "?autoplay=1&rel=0&modestbranding=1&playsinline=1";
+            iframe.title = "Focus music";
+            iframe.allow =
+                "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+            iframe.referrerPolicy = "strict-origin-when-cross-origin";
+            iframe.allowFullscreen = true;
+            wrap.appendChild(iframe);
+            wrap.classList.remove("hidden");
+            document.getElementById("pomo-focus").classList.add("with-music");
+            document.getElementById("pomo-music-btn").innerHTML =
+                '<i class="fab fa-youtube mr-1.5"></i> Stop focus music';
+        }
+
+        function stopPomoMusic() {
+            const wrap = document.getElementById("pomo-yt-wrap");
+            if (!wrap) return;
+            wrap.innerHTML = "";
+            wrap.classList.add("hidden");
+            document.getElementById("pomo-focus").classList.remove("with-music");
+            const btn = document.getElementById("pomo-music-btn");
+            if (btn) {
+                btn.innerHTML =
+                    '<i class="fab fa-youtube mr-1.5"></i> Play focus music';
+            }
+        }
+
         function completePomodoro() {
-            const display = document.getElementById("pomodoro-display");
             showToast("🍅 Focus session complete!");
             if (pomoChimeEnabled) playCompletionTone();
-            display.classList.add("pomo-done");
-            setTimeout(() => display.classList.remove("pomo-done"), 3200);
+
+            const displays = ["pomodoro-display", "pomodoro-display-lg"]
+                .map((id) => document.getElementById(id))
+                .filter(Boolean);
+            displays.forEach((d) => d.classList.add("pomo-done"));
+            setTimeout(
+                () => displays.forEach((d) => d.classList.remove("pomo-done")),
+                3200
+            );
             resetPomodoro();
         }
 
         function renderPomo() {
             const m = String(Math.floor(pomoLeft / 60)).padStart(2, "0");
             const s = String(pomoLeft % 60).padStart(2, "0");
-            document.getElementById("pomodoro-display").textContent =
-                `${m}:${s}`;
+            const text = `${m}:${s}`;
+            const progress = pomoLeft / POMO_TOTAL;
+            const color = pomoLeft <= 60 ? "#F6AD55" : "#68D391";
 
-            const ring = document.getElementById("pomo-ring-fill");
-            if (ring) {
-                const progress = pomoLeft / POMO_TOTAL;
+            ["pomodoro-display", "pomodoro-display-lg"].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = text;
+            });
+
+            ["pomo-ring-fill", "pomo-ring-fill-lg"].forEach((id) => {
+                const ring = document.getElementById(id);
+                if (!ring) return;
                 ring.style.strokeDasharray = POMO_RING_CIRCUMFERENCE;
                 ring.style.strokeDashoffset =
                     POMO_RING_CIRCUMFERENCE * (1 - progress);
-                ring.style.stroke =
-                    pomoLeft <= 60 ? "#F6AD55" : "#68D391";
-            }
+                ring.style.stroke = color;
+            });
         }
 
         function resetPomodoro() {
             clearInterval(pomoTimer);
             pomoLeft = POMO_TOTAL;
             pomoRunning = false;
-            document.getElementById("pomo-btn").textContent = "Start";
+            setPomoBtnLabel("Start");
             renderPomo();
         }
 
@@ -1236,6 +1474,7 @@
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
                 document.getElementById("latexModal").classList.remove("active");
+                exitPomoFocus();
             }
         });
 
